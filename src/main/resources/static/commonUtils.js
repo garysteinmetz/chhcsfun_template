@@ -1,6 +1,18 @@
 
 function isLoggedIn() {
 }
+function getUserInfo(callback) {
+    $.get(
+        {
+            url: "/userInfo",
+            success: function(data, status) {
+                if (callback) {
+                    callback(data, status);
+                }
+            }
+        }
+    );
+}
 function generateLoginDomStructure(targetId) {
     $.get(
         {
@@ -42,16 +54,49 @@ function getCookie(name) {
     }
     return outValue;
 }
-function sendData(author, appName, appData) {
+function sendData(author, appName, appData, callback) {
     $.post(
         {
             url: "/appState/" + author + "/" + appName,
             data: {appData: JSON.stringify(appData)},
             success: function(data, status) {
-                console.log("ZZZ sendData - " + status);
+                if (callback) {
+                    callback(data, status);
+                }
+                //console.log("ZZZ sendData - " + status);
             }
         }
     );
+}
+function getData(author, appName, callback) {
+    $.get(
+        {
+            url: "/appState/" + author + "/" + appName,
+            success: function(data, status) {
+                if (callback) {
+                    callback(data, status);
+                }
+                //console.log("ZZZ sendData - " + status);
+                //console.log("ZZZ data - " + JSON.stringify(data));
+            }
+        }
+    );
+}
+function getRandomWholeNumberUnder(range) {
+    return Math.floor(Math.random()*range);
+}
+function randomizeArray(input) {
+    var copyOfInput = [];
+    for (var i = 0; i < input.length; i++) {
+        copyOfInput.push(input[i]);
+    }
+    var output = [];
+    for (var i = 0; i < input.length; i++) {
+        var nextIndex = getRandomWholeNumberUnder(copyOfInput.length);
+        output.push(copyOfInput[nextIndex]);
+        copyOfInput.splice(nextIndex, 1);
+    }
+    return output;
 }
 function getLoginInformation() {
 }

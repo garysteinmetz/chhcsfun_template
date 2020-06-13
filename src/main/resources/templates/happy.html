@@ -16,5 +16,6 @@
       Try to be happy.
   <div id="user_pane"></div>
   <input type="button" onclick="sendData('garysteinmetz', 'sampleApp1', {'sampleKey': 'sampleValue1'})" value="Send Data" />
+  <input type="button" onclick="getData('garysteinmetz', 'sampleApp1', function(data, status) {console.log('ZZZ sendData - ' + status); console.log('ZZZ data - ' + JSON.stringify(data));})" value="Get Data" />
   </body>
 </html>

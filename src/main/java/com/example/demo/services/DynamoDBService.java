@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class DynamoDBService {
@@ -49,6 +51,29 @@ public class DynamoDBService {
         item.withString(APP_DATA_FIELD, appData);
         item.withLong(LAST_MODIFIED_FIELD, System.currentTimeMillis());
         userAppData.putItem(item);
+    }
+    public Map<String, Object> retrieveFromUserAppDataTable(String author, String appName, String username) {
+        Map<String, Object> outValue = new HashMap<>();
+        DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
+        Table userAppData = dynamoDB.getTable(tableNameUserAppData);
+        PrimaryKey primaryKey = new PrimaryKey(HASH_KEY, constructHashKeyValue(author),
+                SORT_KEY, constructSortKeyValue(appName, username));
+        Item item = userAppData.getItem(primaryKey);
+        if (item != null) {
+            //
+            outValue.put("isPresent", true);
+            outValue.put("lastModified", item.getLong(LAST_MODIFIED_FIELD));
+            outValue.put("appData", item.getString(APP_DATA_FIELD));
+        } else {
+            outValue.put("isPresent", false);
+        }
+        //Item item = new Item();
+        //item.withPrimaryKey(HASH_KEY, constructHashKeyValue(author),
+        //        SORT_KEY, constructSortKeyValue(appName, username));
+        //item.withString(APP_DATA_FIELD, appData);
+        //item.withLong(LAST_MODIFIED_FIELD, System.currentTimeMillis());
+        //userAppData.putItem(item);
+        return outValue;
     }
     private String constructHashKeyValue(String author) {
         String outValue;
