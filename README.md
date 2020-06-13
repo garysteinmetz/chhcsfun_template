@@ -36,3 +36,8 @@ Cognito Settings (for user pool 'chhcsfun')
     - Click 'Save Changes'
     //
   - Create 'developers' group
+
+./mvnw clean package spring-boot:repackage
+
+Create SSL certificate for ELB in AWS Certificate Manager
+  - Click on the 'Pending validation' option and select 'Create record in Route 53'
