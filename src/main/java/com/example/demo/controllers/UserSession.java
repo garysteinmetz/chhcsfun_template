@@ -19,7 +19,7 @@ public class UserSession implements Serializable {
     private UserSession(Reader reader) throws IOException {
         //
         oauthToken = convertReaderToUtfEightString(reader);
-        //System.out.println("ZZZ oauthToken - " + oauthToken);
+        System.out.println("ZZZ oauthToken - " + oauthToken);
         //
         //
         /*
@@ -60,6 +60,18 @@ public class UserSession implements Serializable {
         return oauthToken;
     }
     public String getUserId() throws JsonProcessingException {
+        return getUserCharacteristic("sub");
+    }
+    public String getUsername() throws JsonProcessingException {
+        return getUserCharacteristic("cognito:username");
+    }
+    public String getName() throws JsonProcessingException {
+        return getUserCharacteristic("name");
+    }
+    public String getEmail() throws JsonProcessingException {
+        return getUserCharacteristic("email");
+    }
+    private String getUserCharacteristic(String characteristic) throws JsonProcessingException {
         String outValue;
         ObjectMapper om = new ObjectMapper();
         //id_token
@@ -75,7 +87,7 @@ public class UserSession implements Serializable {
         String payload = new String(Base64.getDecoder().decode(idPayloadBase64), Consts.UTF_8);
         //System.out.println("ZZZ payload = " + payload);
         Map<?, ?> payloadMap = om.readValue(payload, Map.class);
-        outValue = ((String)payloadMap.get("sub"));
+        outValue = ((String)payloadMap.get(characteristic));
         //System.out.println("ZZZ sub = " + outValue);
         return outValue;
     }
@@ -94,9 +106,13 @@ public class UserSession implements Serializable {
     }
     public static Optional<UserSession> getSession(HttpSession httpSession) {
         Optional<UserSession> outValue;
-        Object o = httpSession.getAttribute("userSession");
-        if (o != null) {
-            outValue = Optional.of((UserSession)o);
+        if (httpSession != null) {
+            Object o = httpSession.getAttribute("userSession");
+            if (o != null) {
+                outValue = Optional.of((UserSession) o);
+            } else {
+                outValue = Optional.empty();
+            }
         } else {
             outValue = Optional.empty();
         }

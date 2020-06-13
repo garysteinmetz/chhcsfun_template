@@ -13,20 +13,21 @@ import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class LoginController {
@@ -40,6 +41,24 @@ public class LoginController {
     @Value("${aws.cognito.oauth2.token.url}")
     String awsCognitoOauth2TokenUrl;
 
+    @ResponseBody
+    @GetMapping(value = "/userInfo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> userInfo(HttpSession httpSession) throws Exception {
+        Map<String, Object> outValue = new HashMap<>();
+        outValue.put("isLoggedIn", false);
+        Optional<UserSession> session = UserSession.getSession(httpSession);
+        if (session.isPresent()) {
+            outValue.put("isLoggedIn", true);
+            outValue.put("displayName", session.get().getName());
+        }
+        return outValue;
+    }
+    @ResponseBody
+    @GetMapping("/logout")
+    public String logout(HttpSession httpSession) throws Exception {
+        httpSession.invalidate();
+        return "You have logged out, refresh any application pages";
+    }
     @GetMapping("/login")
     public ModelAndView login(
             @RequestParam(name="code", required=true) String code,
@@ -67,7 +86,16 @@ public class LoginController {
             //
             UserSession.createSession(inputStreamReader, httpSession);
             String userId = UserSession.getSession(httpSession).get().getUserId();
+            String username = UserSession.getSession(httpSession).get().getUsername();
+            String name = UserSession.getSession(httpSession).get().getName();
+            String email = UserSession.getSession(httpSession).get().getEmail();
             System.out.println("ZZZ userId - " + userId);
+            System.out.println("ZZZ username - " + username);
+            System.out.println("ZZZ name - " + name);
+            System.out.println("ZZZ email - " + email);
+            //
+            //Cookie userDisplayNameCookie = new Cookie("userDisplayName", name);
+            //httpResponse.addCookie(userDisplayNameCookie);
         }
         return new ModelAndView("redirect:" + redirectPath);
     }
