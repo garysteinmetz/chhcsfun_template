@@ -62,6 +62,16 @@
 			<artifactId>aws-java-sdk-dynamodb</artifactId>
 			<version>1.11.777</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-cognitoidentity</artifactId>
+			<version>1.11.777</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-cognitoidp</artifactId>
+			<version>1.11.777</version>
+		</dependency>
 	</dependencies>
 
 	<build>

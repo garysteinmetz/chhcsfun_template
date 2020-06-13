@@ -34,3 +34,5 @@ Cognito Settings (for user pool 'chhcsfun')
     - Under 'Allowed OAuth Flows' check 'Authorization code grant'
     - Under 'Allowed OAuth Scopes' check everything
     - Click 'Save Changes'
+    //
+  - Create 'developers' group

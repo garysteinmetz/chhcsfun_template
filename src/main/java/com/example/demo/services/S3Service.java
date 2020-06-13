@@ -6,14 +6,18 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class S3Service {
@@ -40,6 +44,19 @@ public class S3Service {
     //
     public S3Object getFileFromBucket(String bucketName, String key) {
         return s3client.getObject(bucketName, key);
+    }
+    //
+    public List<String> listFilesInFolder(String bucketName, String prefix) {
+        List<String> outValue = new ArrayList<>();
+        ObjectListing objectListing = s3client.listObjects(bucketName, prefix);
+        List<S3ObjectSummary> objectSummaries = objectListing.getObjectSummaries();
+        for (S3ObjectSummary s3ObjectSummary : objectSummaries) {
+            if (!prefix.equals(s3ObjectSummary.getKey())) {
+                //
+                outValue.add(s3ObjectSummary.getKey());
+            }
+        }
+        return outValue;
     }
     //
     public byte[] readContent(S3Object s3Object) throws IOException {
