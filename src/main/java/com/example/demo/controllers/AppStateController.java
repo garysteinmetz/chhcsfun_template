@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.services.DynamoDBService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class AppStateController {
     }
     @ResponseBody
     @GetMapping("/appState/{author}/{appName}")
-    public ResponseEntity saveAppState(@PathVariable String author, @PathVariable String appName,
+    public ResponseEntity getAppStateForUser(@PathVariable String author, @PathVariable String appName,
         HttpSession httpSession) throws Exception {
         //
         String outValue;
@@ -62,5 +63,18 @@ public class AppStateController {
         //headers.add("Content-Type", "application/json");
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
         //return "{}";
+    }
+    @ResponseBody
+    @GetMapping("/appState/{author}/{appName}/allUsers")
+    public ResponseEntity getAppStateForAllUsers(@PathVariable String author, @PathVariable String appName
+        ) throws Exception {
+        //
+        String outValue;
+        ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(author, appName);
+        ObjectMapper objectMapper = new ObjectMapper();
+        outValue = objectMapper.writeValueAsString(o);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
     }
 }

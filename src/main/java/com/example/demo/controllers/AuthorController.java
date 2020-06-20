@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -28,9 +27,6 @@ public class AuthorController {
     @GetMapping("/")
     public ModelAndView index() throws Exception {
         //
-        //System.out.println("ZZZ happy - " + dynamoDBService.getEntryValueAsString());
-
-        //
         return new ModelAndView("index");
     }
     @ResponseBody
@@ -40,7 +36,6 @@ public class AuthorController {
         List<String> cognitoUsersInGroup = cognitoService.getCognitoUsersInGroup(developersGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        //headers.add("Content-Type", "application/json");
         return new ResponseEntity<>(objectMapper.writeValueAsString(cognitoUsersInGroup), headers, HttpStatus.OK);
     }
     @GetMapping("/content/{author}")
@@ -52,12 +47,7 @@ public class AuthorController {
     public ResponseEntity getContent(@PathVariable String author, @PathVariable String content) throws Exception {
         S3Object s3Object = s3Service.getFileFromBucket(contentBucket, author + "/" + content);
         byte[] contentBytes = s3Service.readContent(s3Object);
-        ObjectMapper objectMapper = new ObjectMapper();
         HttpHeaders headers = new HttpHeaders();
-        if (content.endsWith(".html")) {
-            headers.setContentType(MediaType.TEXT_HTML);
-        }
-        //headers.add("Content-Type", "application/json");
         return new ResponseEntity<>(contentBytes, headers, HttpStatus.OK);
     }
     @ResponseBody

@@ -7,12 +7,17 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.*;
+import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class DynamoDBService {
@@ -22,6 +27,8 @@ public class DynamoDBService {
     @Value("${aws.dynamodb.table.name.userAppData}") String tableNameUserAppData;
 
     AmazonDynamoDB dynamoDBClient;
+    //
+    private static final String SEPERATOR = "|";
     //
     private static final String HASH_KEY = "author_id";
     private static final String SORT_KEY = "user_app_id";
@@ -75,6 +82,91 @@ public class DynamoDBService {
         //userAppData.putItem(item);
         return outValue;
     }
+    public ObjectNode retrieveAppDataForAllUsersAsJsonObject(String authorId, String app) {
+        ObjectNode outValue = JsonNodeFactory.instance.objectNode();
+        DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
+        Table userAppData = dynamoDB.getTable(tableNameUserAppData);
+        QuerySpec querySpec = new QuerySpec();
+        querySpec.withKeyConditionExpression("author_id = :authorId and begins_with(user_app_id, :userAppIdPrefix)");
+        ValueMap params = new ValueMap();
+        params.withString(":authorId", authorId.trim().toLowerCase());
+        params.withString(":userAppIdPrefix", app.trim().toLowerCase() + SEPERATOR);
+        querySpec.withValueMap(params);
+        querySpec.withProjectionExpression("user_app_id, app_data, last_modified");
+        ItemCollection<QueryOutcome> queryOutcome = userAppData.query(querySpec);
+        Iterator<Item> iter = queryOutcome.iterator();
+        while (iter.hasNext()) {
+            Item nextItem = iter.next();
+            String userAppId = nextItem.getString("user_app_id");
+            long lastModified = nextItem.getLong("last_modified");
+            String appData = nextItem.getString("app_data");
+            //
+            String username = getUsernameFromUserAppId(userAppId);
+            if (username != null) {
+                //
+                try {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode appDataWithoutStrings = stripStringsFromAppData(appData);
+                    ObjectNode usernameNode = outValue.with(username);
+                    usernameNode.put("last_modified", lastModified);
+                    usernameNode.set("app_data", appDataWithoutStrings);
+                } catch (JsonProcessingException e) {
+                    System.out.println("ZZZ error processing for username - " + username);
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("ZZZ user_app_id doesn't contain valid username");
+            }
+        }
+        return outValue;
+    }
+    public JsonNode stripStringsFromAppData(String appData) throws JsonProcessingException {
+        JsonNode outValue;
+        ObjectMapper objectMapper = new ObjectMapper();
+        outValue = objectMapper.readTree(appData);
+        //outValue = objectMapper.readValue(appData, Type);
+        outValue = objectMapper.readTree(outValue.asText());
+        outValue = stripStringsFromNode(outValue);
+        return outValue;
+    }
+    public JsonNode stripStringsFromNode(JsonNode value) {
+        JsonNode outValue;
+        if (value.getNodeType().equals(JsonNodeType.STRING)) {
+            outValue = NullNode.getInstance();
+        } else if (value.getNodeType().equals(JsonNodeType.ARRAY)) {
+            ArrayNode array = ((ArrayNode)value);
+            for (int i = 0; i < array.size(); i++) {
+                array.set(i, stripStringsFromNode(array.get(i)));
+            }
+            outValue = array;
+        } else if (value.getNodeType().equals(JsonNodeType.OBJECT)) {
+            ObjectNode object = ((ObjectNode)value);
+            Iterator<Map.Entry<String, JsonNode>> iter = object.fields();
+            while (iter.hasNext()) {
+                Map.Entry<String, JsonNode> nextEntry = iter.next();
+                object.replace(nextEntry.getKey(), stripStringsFromNode(nextEntry.getValue()));
+            }
+            outValue = object;
+        } else {
+            outValue = value;
+        }
+        //
+        return outValue;
+    }
+    private static String getUsernameFromUserAppId(String userAppId) {
+        String outValue = null;
+        if (userAppId != null) {
+            //
+            int separatorIndex = userAppId.indexOf(SEPERATOR);
+            if (separatorIndex != -1) {
+                String candidateValue = userAppId.substring(separatorIndex + SEPERATOR.length());
+                if (!candidateValue.isEmpty()) {
+                    outValue = candidateValue;
+                }
+            }
+        }
+        return outValue;
+    }
     private String constructHashKeyValue(String author) {
         String outValue;
         if (author != null && author.trim().length() > 0) {
@@ -87,7 +179,7 @@ public class DynamoDBService {
     private String constructSortKeyValue(String appName, String username) {
         String outValue;
         if (appName != null && appName.trim().length() > 0 && username != null && username.trim().length() > 0) {
-            outValue = appName.trim().toLowerCase() + "|" + username.trim().toLowerCase();
+            outValue = appName.trim().toLowerCase() + SEPERATOR + username.trim().toLowerCase();
         } else {
             throw new IllegalStateException("appname - '" + appName + "', username - '" + username + "'");
         }
