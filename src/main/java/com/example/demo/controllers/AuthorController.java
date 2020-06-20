@@ -82,17 +82,24 @@ public class AuthorController {
     }
     @ResponseBody
     @GetMapping("/contentList")
-    public ResponseEntity developerList(HttpSession httpSession) throws Exception {
+    public ResponseEntity developerList(
+            @RequestParam(name="developer", required=false) String developer,
+            HttpSession httpSession) throws Exception {
         ResponseEntity outValue;
         ObjectMapper objectMapper = new ObjectMapper();
         Optional<UserSession> userSession = UserSession.getSession(httpSession);
-        if (userSession.isPresent() && cognitoService.isUserInGroup(userSession.get(), developersGroup)) {
-            //List<String> cognitoUsersInGroup = cognitoService.getCognitoUsersInGroup(developersGroup);
-            List<String> contentList = s3Service.listFilesInFolder(
-                    contentBucket, userSession.get().getUsername() + "/");
+        String pathPrefix = null;
+        if (developer != null) {
+            pathPrefix = developer;
+        } else if (userSession.isPresent() && cognitoService.isUserInGroup(userSession.get(), developersGroup)) {
+            pathPrefix = userSession.get().getUsername();
+        }
+        //
+        if (pathPrefix != null) {
+            //
+            List<String> contentList = s3Service.listFilesInFolder(contentBucket, pathPrefix + "/");
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            //headers.add("Content-Type", "application/json");
             outValue = new ResponseEntity<>(objectMapper.writeValueAsString(contentList), headers, HttpStatus.OK);
         } else {
             outValue = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
