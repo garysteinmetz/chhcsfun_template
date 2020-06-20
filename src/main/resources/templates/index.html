@@ -25,18 +25,46 @@
             }
         }
     );
+    $.get(
+        {
+            url: "/contentList",
+            success: function(data, status) {
+                $("#author_content").show();
+                for (var i = 0; i < data.length; i++) {
+                    console.log(data);
+                    var a = document.createElement( "a" );
+                    $(a).attr("href", "/content/" + data[i]);
+                    $(a).attr("target", "_blank");
+                    $(a).text(data[i]);
+                    $("#author_content").append(a);
+                    var p = document.createElement( "p" );
+                    $("#author_content").append(p);
+                }
+            }
+        }
+    );
               }
           );
           //
       </script>
 </head>
 <body>
-List of developers
 <div id="user_pane"></div>
 <hr />
 <h1>Click on a link below to view that developer's work</h1>
 <div id="developers_list">
 
+</div>
+<div id="author_content" style="display: none">
+    <hr />
+    <h2>My Content</h2>
+    <div>
+        <form method="POST" action="/content" enctype="multipart/form-data">
+            Upload File: <input type="file" name="file" />
+            <input type="submit" name="submit" value="Upload File" />
+        </form>
+    </div>
+    <p>Right-click over a link below to get the option to save it locally.</p>
 </div>
 </body>
 </html>

@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.example.demo.services.CognitoService;
 import com.example.demo.services.S3Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -12,13 +13,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AuthorController {
     @Value("${aws.cognito.group.developers}") String developersGroup;
+    @Value("${aws.s3.bucket.perUserLimit}") int perUserLimit;
     @Autowired
     CognitoService cognitoService;
     @Autowired
@@ -42,23 +47,56 @@ public class AuthorController {
     public ModelAndView saveAppState(@PathVariable String author) throws Exception {
         return new ModelAndView("content");
     }
+    @PostMapping("/content")
+    public ModelAndView uploadFile(@RequestParam("file") MultipartFile file, HttpSession httpSession
+        ) throws Exception {
+        Optional<UserSession> userSession = UserSession.getSession(httpSession);
+        if (userSession.isPresent() && cognitoService.isUserInGroup(userSession.get(), developersGroup)) {
+            String contentPrefix = userSession.get().getUsername() + "/";
+            List<String> fileNames = s3Service.listFilesInFolder(contentBucket, contentPrefix);
+            String key = contentPrefix + file.getOriginalFilename();
+            if (fileNames.size() < perUserLimit) {
+                //
+                s3Service.uploadFileIntoBucket(
+                        contentBucket, key, file.getInputStream(), file.getContentType());
+            } else if (fileNames.size() == perUserLimit && fileNames.contains(file.getOriginalFilename())) {
+                //
+                s3Service.uploadFileIntoBucket(
+                        contentBucket, key, file.getInputStream(), file.getContentType());
+            } else {
+                //
+            }
+        }
+        return new ModelAndView("redirect:/");
+    }
     @ResponseBody
     @GetMapping("/content/{author}/{content}")
     public ResponseEntity getContent(@PathVariable String author, @PathVariable String content) throws Exception {
         S3Object s3Object = s3Service.getFileFromBucket(contentBucket, author + "/" + content);
         byte[] contentBytes = s3Service.readContent(s3Object);
         HttpHeaders headers = new HttpHeaders();
+        if (s3Object.getObjectMetadata() != null && s3Object.getObjectMetadata().getContentType() != null) {
+            headers.add(HttpHeaders.CONTENT_TYPE, s3Object.getObjectMetadata().getContentType());
+        }
         return new ResponseEntity<>(contentBytes, headers, HttpStatus.OK);
     }
     @ResponseBody
     @GetMapping("/contentList")
-    public ResponseEntity developerList(@RequestParam("developer") String developer) throws Exception {
+    public ResponseEntity developerList(HttpSession httpSession) throws Exception {
+        ResponseEntity outValue;
         ObjectMapper objectMapper = new ObjectMapper();
-        //List<String> cognitoUsersInGroup = cognitoService.getCognitoUsersInGroup(developersGroup);
-        List<String> contentList = s3Service.listFilesInFolder(contentBucket, developer + "/");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        //headers.add("Content-Type", "application/json");
-        return new ResponseEntity<>(objectMapper.writeValueAsString(contentList), headers, HttpStatus.OK);
+        Optional<UserSession> userSession = UserSession.getSession(httpSession);
+        if (userSession.isPresent() && cognitoService.isUserInGroup(userSession.get(), developersGroup)) {
+            //List<String> cognitoUsersInGroup = cognitoService.getCognitoUsersInGroup(developersGroup);
+            List<String> contentList = s3Service.listFilesInFolder(
+                    contentBucket, userSession.get().getUsername() + "/");
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            //headers.add("Content-Type", "application/json");
+            outValue = new ResponseEntity<>(objectMapper.writeValueAsString(contentList), headers, HttpStatus.OK);
+        } else {
+            outValue = new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        return outValue;
     }
 }

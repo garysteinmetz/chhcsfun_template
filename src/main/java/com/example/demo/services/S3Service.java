@@ -6,16 +6,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +38,12 @@ public class S3Service {
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.fromName(awsRegion))
                 .build();
+    }
+    //
+    public void uploadFileIntoBucket(String bucketName, String key, InputStream is, String contentType) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(contentType);
+        s3client.putObject(bucketName, key, is, objectMetadata);
     }
     //
     public S3Object getFileFromBucket(String bucketName, String key) {

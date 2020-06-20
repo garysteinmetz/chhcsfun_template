@@ -58,7 +58,7 @@ public class CognitoService {
         boolean outValue = false;
         AdminListGroupsForUserRequest adminListGroupsForUserRequest = new AdminListGroupsForUserRequest();
         adminListGroupsForUserRequest.setUserPoolId(userPoolId);
-        adminListGroupsForUserRequest.setUsername(userSession.getUserId());
+        adminListGroupsForUserRequest.setUsername(userSession.getUsername());
         adminListGroupsForUserRequest.setLimit(50);
         AdminListGroupsForUserResult adminListGroupsForUserResult =
                 cognitoIdentityProvider.adminListGroupsForUser(adminListGroupsForUserRequest);
