@@ -106,7 +106,9 @@ public class DynamoDBService {
                 //
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode appDataWithoutStrings = stripStringsFromAppData(appData);
+
+                    JsonNode appDataWithoutStrings = objectMapper.readTree(appData);
+                    appDataWithoutStrings = objectMapper.readTree(appDataWithoutStrings.asText());
                     ObjectNode usernameNode = outValue.with(username);
                     usernameNode.put("last_modified", lastModified);
                     usernameNode.set("app_data", appDataWithoutStrings);
@@ -118,39 +120,6 @@ public class DynamoDBService {
                 System.out.println("ZZZ user_app_id doesn't contain valid username");
             }
         }
-        return outValue;
-    }
-    public JsonNode stripStringsFromAppData(String appData) throws JsonProcessingException {
-        JsonNode outValue;
-        ObjectMapper objectMapper = new ObjectMapper();
-        outValue = objectMapper.readTree(appData);
-        //outValue = objectMapper.readValue(appData, Type);
-        outValue = objectMapper.readTree(outValue.asText());
-        outValue = stripStringsFromNode(outValue);
-        return outValue;
-    }
-    public JsonNode stripStringsFromNode(JsonNode value) {
-        JsonNode outValue;
-        if (value.getNodeType().equals(JsonNodeType.STRING)) {
-            outValue = NullNode.getInstance();
-        } else if (value.getNodeType().equals(JsonNodeType.ARRAY)) {
-            ArrayNode array = ((ArrayNode)value);
-            for (int i = 0; i < array.size(); i++) {
-                array.set(i, stripStringsFromNode(array.get(i)));
-            }
-            outValue = array;
-        } else if (value.getNodeType().equals(JsonNodeType.OBJECT)) {
-            ObjectNode object = ((ObjectNode)value);
-            Iterator<Map.Entry<String, JsonNode>> iter = object.fields();
-            while (iter.hasNext()) {
-                Map.Entry<String, JsonNode> nextEntry = iter.next();
-                object.replace(nextEntry.getKey(), stripStringsFromNode(nextEntry.getValue()));
-            }
-            outValue = object;
-        } else {
-            outValue = value;
-        }
-        //
         return outValue;
     }
     private static String getUsernameFromUserAppId(String userAppId) {
@@ -192,4 +161,9 @@ public class DynamoDBService {
     //    Item item = sample1.getItem(primaryKey);
     //    return item.getString("value");
     //}
+    //
+    //
+    //
+    //
+    //
 }
