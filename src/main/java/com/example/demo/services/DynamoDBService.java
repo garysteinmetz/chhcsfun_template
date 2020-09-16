@@ -82,6 +82,28 @@ public class DynamoDBService {
         //userAppData.putItem(item);
         return outValue;
     }
+    public Set<String> getAllAppNamesByAuthor(String authorId) {
+        Set<String> outValue = new TreeSet<>();
+        DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
+        Table userAppData = dynamoDB.getTable(tableNameUserAppData);
+        QuerySpec querySpec = new QuerySpec();
+        querySpec.withKeyConditionExpression("author_id = :authorId");
+        ValueMap params = new ValueMap();
+        params.withString(":authorId", authorId.trim().toLowerCase());
+        querySpec.withValueMap(params);
+        querySpec.withProjectionExpression("user_app_id");
+        ItemCollection<QueryOutcome> queryOutcome = userAppData.query(querySpec);
+        Iterator<Item> iter = queryOutcome.iterator();
+        while (iter.hasNext()) {
+            Item nextItem = iter.next();
+            String userAppId = nextItem.getString("user_app_id");
+            String app = getAppFromUserAppId(userAppId);
+            if (app != null) {
+                outValue.add(app);
+            }
+        }
+        return outValue;
+    }
     public ObjectNode retrieveAppDataForAllUsersAsJsonObject(String authorId, String app) {
         ObjectNode outValue = JsonNodeFactory.instance.objectNode();
         DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
@@ -129,6 +151,20 @@ public class DynamoDBService {
             int separatorIndex = userAppId.indexOf(SEPERATOR);
             if (separatorIndex != -1) {
                 String candidateValue = userAppId.substring(separatorIndex + SEPERATOR.length());
+                if (!candidateValue.isEmpty()) {
+                    outValue = candidateValue;
+                }
+            }
+        }
+        return outValue;
+    }
+    private static String getAppFromUserAppId(String userAppId) {
+        String outValue = null;
+        if (userAppId != null) {
+            //
+            int separatorIndex = userAppId.indexOf(SEPERATOR);
+            if (separatorIndex != -1) {
+                String candidateValue = userAppId.substring(0, separatorIndex);
                 if (!candidateValue.isEmpty()) {
                     outValue = candidateValue;
                 }

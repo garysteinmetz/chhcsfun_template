@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.services.DynamoDBService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.graalvm.polyglot.Context;
@@ -68,6 +69,25 @@ public class AppStateController {
         //headers.add("Content-Type", "application/json");
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
         //return "{}";
+    }
+    @ResponseBody
+    @GetMapping("/appState/allUsersUnfiltered/{appName}")
+    public ResponseEntity getUnfilteredAppDtateForAllUsers(
+            @PathVariable String appName, HttpSession httpSession) throws JsonProcessingException {
+        //
+        String outValue;
+        Optional<UserSession> userSession = UserSession.getSession(httpSession);
+        if (userSession.isPresent()) {
+            String username = userSession.get().getUsername();
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(username, appName);
+            outValue = objectMapper.writeValueAsString(o);
+        } else {
+            throw new IllegalStateException("User isn't logged in");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
     }
     @ResponseBody
     @PostMapping("/appState/{author}/{appName}/allUsers")
