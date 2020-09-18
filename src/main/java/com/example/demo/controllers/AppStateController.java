@@ -19,8 +19,7 @@ import javax.script.ScriptException;
 import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class AppStateController {
@@ -69,6 +68,19 @@ public class AppStateController {
         //headers.add("Content-Type", "application/json");
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
         //return "{}";
+    }
+    @ResponseBody
+    @GetMapping("/appState/allApps")
+    public ResponseEntity getAllAppsByUser(HttpSession httpSession) throws JsonProcessingException {
+        Set<String> outValue = new HashSet<>();
+        Optional<UserSession> userSession = UserSession.getSession(httpSession);
+        if (userSession.isPresent()) {
+            String username = userSession.get().getUsername();
+            outValue = dynamoDBService.getAllAppNamesByAuthor(username);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
     }
     @ResponseBody
     @GetMapping("/appState/allUsersUnfiltered/{appName}")

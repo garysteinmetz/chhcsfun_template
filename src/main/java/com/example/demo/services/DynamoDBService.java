@@ -106,6 +106,7 @@ public class DynamoDBService {
     }
     public ObjectNode retrieveAppDataForAllUsersAsJsonObject(String authorId, String app) {
         ObjectNode outValue = JsonNodeFactory.instance.objectNode();
+        ObjectNode userDataNode = outValue.with("userData");
         DynamoDB dynamoDB = new DynamoDB(dynamoDBClient);
         Table userAppData = dynamoDB.getTable(tableNameUserAppData);
         QuerySpec querySpec = new QuerySpec();
@@ -131,7 +132,7 @@ public class DynamoDBService {
 
                     JsonNode appDataWithoutStrings = objectMapper.readTree(appData);
                     appDataWithoutStrings = objectMapper.readTree(appDataWithoutStrings.asText());
-                    ObjectNode usernameNode = outValue.with(username);
+                    ObjectNode usernameNode = userDataNode.with(username);
                     usernameNode.put("last_modified", lastModified);
                     usernameNode.set("app_data", appDataWithoutStrings);
                 } catch (JsonProcessingException e) {

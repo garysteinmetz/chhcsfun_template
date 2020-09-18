@@ -1,0 +1,149 @@
+<html>
+<head>
+    <title>Application Data</title>
+    <script src="/jquery-3.5.1.min.js"></script>
+    <script src="/commonUtils.js"></script>
+    <script>
+          //
+          function loadAppData(appName) {
+            console.log(appName);
+                    $.get(
+                        {
+                            url: "/appState/allUsersUnfiltered/" + appName,
+                            success: function(data, status) {
+                                //console.log("Here it is");
+                                //console.log(JSON.stringify(data));
+                                $("#source_data").val(JSON.stringify(data, null, 2));
+                                //for (let i = 0; i < data.length; i++) {
+                                //    console.log(data[i]);
+                                //}
+                            }
+                        }
+                    );
+          }
+          $(document).ready(
+              function() {
+                  //generateLoginDomStructure("user_pane");
+    $.get(
+        {
+            url: "/developersList",
+            success: function(data, status) {
+                //generateLoginDomStructureImpl(targetId, data);
+                var developersList = $("#developers_list");
+                for (var i = 0; i < data.length; i++) {
+                    console.log('nextDeveloper - ' + data[i]);
+                    var a = document.createElement( "a" );
+                    $(developersList).append(a);
+                    $(a).text(data[i]);
+                    $(a).attr("href", "/content/" + data[i]);
+                    var br = document.createElement( "br" );
+                    $(developersList).append(br);
+                }
+            }
+        }
+    );
+    $.get(
+        {
+            url: "/contentList",
+            success: function(data, status) {
+                $("#author_content").show();
+                for (var i = 0; i < data.length; i++) {
+                    console.log(data);
+                    var a = document.createElement( "a" );
+                    $(a).attr("href", "/content/" + data[i]);
+                    $(a).attr("target", "_blank");
+                    $(a).text(data[i]);
+                    $("#author_content").append(a);
+                    var p = document.createElement( "p" );
+                    $("#author_content").append(p);
+                }
+            }
+        }
+    );
+                    getUserInfo(
+                        function(data, status) {
+                            generateLoginDomStructureImpl("user_pane", data);
+                            if (data.isLoggedIn) {
+                                $("#your_apps").show();
+                    $.get(
+                        {
+                            url: "/appState/allUsersUnfiltered/chhcsfinalexam2020wip",
+                            success: function(data, status) {
+                                console.log(JSON.stringify(data));
+                                for (let i = 0; i < data.length; i++) {
+                                    console.log(data[i]);
+                                }
+                            }
+                        }
+                    );
+                    $.get(
+                        {
+                            url: "/appState/allApps",
+                            success: function(data, status) {
+                                console.log(JSON.stringify(data));
+                                for (let i = 0; i < data.length; i++) {
+                                    var a = document.createElement( "a" );
+                                    $(a).attr("href", "javascript:loadAppData('" + data[i] + "')");
+                                    //$(a).attr("target", "_blank");
+                                    $(a).text(data[i]);
+                                    $("#your_apps").append(a);
+                                    var p = document.createElement( "p" );
+                                    $("#your_apps").append(p);
+                                }
+                            }
+                        }
+                    );
+                            }
+                        }
+                    );
+              }
+          );
+          function executeTransformInBrowser() {
+                console.log("ZZZ - " + $('#transform_function').val());
+                eval("var transformFunction = " + $('#transform_function').val());
+                let inputValue = JSON.parse($('#source_data').val());
+                let result = transformFunction(inputValue);
+                $("#transform_result").val(JSON.stringify(result, null, 2));
+          }
+          //
+      </script>
+</head>
+<body>
+<div style="display: none" id="your_apps">
+    <h3>Here are your applications (click to load all data from that app)</h3>
+
+</div>
+<hr />
+<textarea id="source_data" rows="30" cols="80">{
+}</textarea>
+<hr />
+    <h3>Transform Function</h3>
+<textarea id="transform_function" rows="25" cols="80">function(params){
+    console.log('Just returning input parameters');
+    return params;
+}</textarea>
+<hr />
+<input type="button" value="Run Transform in Browser" onclick="executeTransformInBrowser()"/>
+<input type="button" value="Run Transform in Server (Like Browser, But Includes Filtering)"/>
+<hr />
+<textarea id="transform_result" rows="25" cols="80"></textarea>
+<hr />
+<div id="user_pane"></div>
+<hr />
+<h1>Click on a link below to view that developer's work</h1>
+<div id="developers_list">
+
+</div>
+<div id="author_content" style="display: none">
+    <hr />
+    <h2>My Content</h2>
+    <div>
+        <form method="POST" action="/content" enctype="multipart/form-data">
+            Upload File: <input type="file" name="file" />
+            <input type="submit" name="submit" value="Upload File" />
+        </form>
+    </div>
+    <p>Right-click over a link below to get the option to save it locally.</p>
+</div>
+</body>
+</html>
