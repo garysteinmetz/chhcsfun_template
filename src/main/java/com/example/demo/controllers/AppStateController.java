@@ -112,7 +112,9 @@ public class AppStateController {
         ObjectMapper objectMapper = new ObjectMapper();
         if (overrideData != null) {
             System.out.println("ZZZ Strategy 1 - " + overrideData);
-            outValue = objectMapper.writeValueAsString(overrideData);
+            //outValue = objectMapper.writeValueAsString(overrideData);
+            outValue = objectMapper.readTree(overrideData).toString();
+            System.out.println("ZZZ Strategy 12 - " + outValue);
         } else {
             System.out.println("ZZZ Strategy 2");
             ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(author, appName);

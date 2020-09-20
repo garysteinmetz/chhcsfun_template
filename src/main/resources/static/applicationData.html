@@ -118,7 +118,8 @@
                 var someConfig = {
                         url: "/appState/garysteinmetz/chhcsfinalexam2020wip/allUsers",
                         data: {
-                            transform: transformFunction.toString()
+                            transform: transformFunction.toString(),
+                            overrideData: $('#source_data').val()
                         },
                         success: function(data, status) {
                             //alert("Hi");
