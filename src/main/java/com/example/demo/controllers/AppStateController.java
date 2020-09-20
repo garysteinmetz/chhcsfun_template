@@ -103,15 +103,24 @@ public class AppStateController {
     }
     @ResponseBody
     @PostMapping("/appState/{author}/{appName}/allUsers")
-    public ResponseEntity getAppStateForAllUsers(@PathVariable String author, @PathVariable String appName,
-                                                 @RequestParam("transform") String transform) throws Exception {
+    public ResponseEntity getAppStateForAllUsers(
+            @PathVariable String author, @PathVariable String appName,
+            @RequestParam("transform") String transform,
+            @RequestParam(name="overrideData", required=false) String overrideData) throws Exception {
         //
         String outValue;
         ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(author, appName);
-        outValue = objectMapper.writeValueAsString(o);
+        if (overrideData != null) {
+            System.out.println("ZZZ Strategy 1 - " + overrideData);
+            outValue = objectMapper.writeValueAsString(overrideData);
+        } else {
+            System.out.println("ZZZ Strategy 2");
+            ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(author, appName);
+            outValue = objectMapper.writeValueAsString(o);
+        }
         System.out.println("ZZZ transform - " + transform);
         outValue = stripUnsupportedStrings(transform, outValue);
+        System.out.println("ZZZ outValue - " + outValue);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
@@ -150,6 +159,8 @@ public class AppStateController {
         //Value input1 = context.parse("js", appData);
         Value input1 = context.asValue(appData);//context.parse("js", appData);
         System.out.println("ZZZ B");
+        System.out.println("ZZZ input1 - " + input1);
+        System.out.println("ZZZ jsCode = " + jsCode);
         Value function1 = context.eval("js", "(" + jsCode + ")");
         Value result1 = function1.execute(input1);
         //System.out.println("ZZZ result1 - " + result1);
@@ -157,17 +168,21 @@ public class AppStateController {
         //
         final String[] SIMPLIFY_JSON = new String[]{
                 "(function(param){",
-                "  return JSON.parse(JSON.stringify(param));",
-                //"  return JSON.parse(param);",
+                //"  return JSON.parse(JSON.stringify(param));",
+                "  return JSON.parse(param);",
                 "})"
         };
         Value function2 = context.eval("js", assembleMultiLine(SIMPLIFY_JSON));
         System.out.println("ZZZ result1 - " + result1);
+        //System.out.println("ZZZ result1 - " + result1.);
+        //System.out.println("ZZZ result1 - " + result1.asString());
         Value result2 = function2.execute(result1);
         System.out.println("ZZZ result2 - " + result2);
         //
         final String[] STRIP_STRINGS = new String[]{
                 "(function stripStrings(param, allowedStrings) {",
+                "console.log('param - ' + param);",
+                "console.log('type param - ' + (typeof param));",
                 "  if ((typeof param) === 'string') {",
                 "    if (param.length <= 2 || allowedStrings.indexOf(param) != -1) {",
                 "      return param;",
@@ -195,10 +210,15 @@ public class AppStateController {
                 "})"
         };
         Value function3 = context.eval("js", assembleMultiLine(STRIP_STRINGS));
-        Value array1 = context.eval("js", "['def']");
+        Value array1 = context.eval("js", "['userData']");
         Value result3 = function3.execute(result2, array1);
         outValue = result3.toString();
         System.out.println("ZZZ result3 - " + result3);
+        Value function4 = context.eval("js", "(function(o){return JSON.stringify(o)})");
+        Value result4 = function4.execute(result3);
+        //System.out.println("ZZZ result4 - " + result4);
+        outValue = result4.as(String.class);
+        System.out.println("ZZZ result4 - " + outValue);
         return outValue;
     }
     private String assembleMultiLine(String... lines) {

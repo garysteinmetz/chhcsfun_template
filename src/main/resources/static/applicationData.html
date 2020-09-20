@@ -105,6 +105,38 @@
                 let result = transformFunction(inputValue);
                 $("#transform_result").val(JSON.stringify(result, null, 2));
           }
+          function executeTransformOnServer() {
+                console.log("ZZZ A - " + $('#transform_function').val());
+                eval("var transformFunction = " + $('#transform_function').val());
+                let inputValue = JSON.parse($('#source_data').val());
+                //let someFunction = (
+                //    function() {
+                //        return {"a": 123};
+                //    }
+                //).toString();
+                console.log("About to make Post call");
+                var someConfig = {
+                        url: "/appState/garysteinmetz/chhcsfinalexam2020wip/allUsers",
+                        data: {
+                            transform: transformFunction.toString()
+                        },
+                        success: function(data, status) {
+                            //alert("Hi");
+                            //z.a = 7;
+                            //console.log("ZZZ B");
+                            //console.log("ZZZ result - " + JSON.stringify(data));
+                            $("#transform_result").val(JSON.stringify(data, null, 2));
+                        },
+                        error: function(result) {
+                            //console.log("Error");
+                            //console.log(result);
+                        }
+                    };
+                //console.log("someConfig - " + JSON.stringify(someConfig, null, 2));
+                console.log(someConfig);
+                //someConfig.success({"abc": "123,"});
+                $.post(someConfig);
+          }
           //
       </script>
 </head>
@@ -124,7 +156,7 @@
 }</textarea>
 <hr />
 <input type="button" value="Run Transform in Browser" onclick="executeTransformInBrowser()"/>
-<input type="button" value="Run Transform in Server (Like Browser, But Includes Filtering)"/>
+<input type="button" value="Run Transform in Server (Like Browser, But Includes Filtering)" onclick="executeTransformOnServer()"/>
 <hr />
 <textarea id="transform_result" rows="25" cols="80"></textarea>
 <hr />
