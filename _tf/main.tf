@@ -13,6 +13,10 @@ resource aws_lightsail_instance chhcsfun {
   availability_zone = "us-east-1a"
   blueprint_id = "amazon_linux"
   bundle_id = "nano_2_0"
+  user_data = <<EOF
+sudo yum -y install java-1.8.0-openjdk-devel.x86_64
+sudo update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
+EOF
 }
 
 output "id" {
