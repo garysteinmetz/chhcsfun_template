@@ -5,11 +5,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.session.data.redis.config.ConfigureRedisAction;
+//import org.springframework.session.data.redis.config.ConfigureRedisAction;
 
 @Configuration
 @ConditionalOnProperty(
-        value="aws.enabled",
+        value="tf.var.aws.enabled",
         havingValue = "true",
         matchIfMissing = false)
 @PropertySource("classpath:aws.properties")
@@ -24,8 +24,8 @@ public class AwsConfiguration {
     //`notify-keyspace-events`,
     //https://stackoverflow.com/questions/28116156/jedisdataexception-when-upgrading-spring-session-from-1-0-0-rc1-to-1-0-0-release
     //https://github.com/spring-projects/spring-session/issues/124
-    @Bean
-    public static ConfigureRedisAction configureRedisAction() {
-        return ConfigureRedisAction.NO_OP;
-    }
+    //@Bean
+    //public static ConfigureRedisAction configureRedisAction() {
+    //    return ConfigureRedisAction.NO_OP;
+    //}
 }

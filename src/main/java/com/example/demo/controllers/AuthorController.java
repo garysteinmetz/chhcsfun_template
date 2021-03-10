@@ -21,13 +21,13 @@ import java.util.Optional;
 
 @Controller
 public class AuthorController {
-    @Value("${aws.cognito.group.developers}") String developersGroup;
-    @Value("${aws.s3.bucket.perUserLimit}") int perUserLimit;
+    @Value("${tf.var.aws.cognito.group.developers}") String developersGroup;
+    @Value("${tf.var.aws.s3.bucket.perUserLimit}") int perUserLimit;
     @Autowired
     CognitoService cognitoService;
     @Autowired
     S3Service s3Service;
-    @Value("${aws.s3.bucket.name.content}") String contentBucket;
+    @Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
     @GetMapping("/")
     public ModelAndView index() throws Exception {
         //
@@ -97,6 +97,7 @@ public class AuthorController {
         if (pathPrefix != null) {
             //
             List<String> contentList = s3Service.listFilesInFolder(contentBucket, pathPrefix + "/");
+            //s3Service.
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             outValue = new ResponseEntity<>(objectMapper.writeValueAsString(contentList), headers, HttpStatus.OK);

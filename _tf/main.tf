@@ -7,9 +7,10 @@ locals {
   lightsail_startup_script = <<EOF
 sudo yum -y install java-1.8.0-openjdk-devel.x86_64
 sudo update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
-aws configure set aws_access_key_id "${aws_iam_access_key.chhcsfun_lightsail_user.id}"
-aws configure set aws_secret_access_key "${aws_iam_access_key.chhcsfun_lightsail_user.secret}"
-aws configure set default.region "${data.aws_region.current.name}"
+sudo aws configure set aws_access_key_id "${aws_iam_access_key.chhcsfun_lightsail_user.id}"
+sudo aws configure set aws_secret_access_key "${aws_iam_access_key.chhcsfun_lightsail_user.secret}"
+sudo aws configure set default.region "${data.aws_region.current.name}"
+sudo aws s3 cp s3://${local.bucket_name}/app.jar /app.jar 1> /resultUploadingApp.txt 2> /errorUploadingApp.txt
 EOF
 }
 
@@ -27,7 +28,7 @@ resource aws_lightsail_instance chhcsfun {
   blueprint_id = "amazon_linux"
   bundle_id = "nano_2_0"
   user_data = local.lightsail_startup_script
-  depends_on = [aws_s3_bucket.chhcsfun]
+  depends_on = [aws_s3_bucket.chhcsfun, aws_s3_bucket_object.chhcsfun_app_file]
 }
 
 resource aws_iam_policy policy {
@@ -48,6 +49,12 @@ EOF
 #      "Resource": ""${aws_s3_bucket.chhcsfun.arn}/*"
 #      "Resource": "arn:aws:s3:::${local.bucket_name}/*"
 #sudo aws s3 cp s3://${local.bucket_name}/sampleOne.txt ./sampleOne.txt
+#  - 'The operating system seems to be based on CentOS 7.'
+#https://www.theregister.com/2020/04/22/aws_introduces_linux_2_ready/
+
+#https://certbot.eff.org/lets-encrypt/centosrhel7-nginx
+
+#https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html
 
 resource aws_iam_policy_attachment chhcsfun_policy_attachment {
   name = "chhcsfun_policy_attachment"
@@ -65,6 +72,13 @@ resource aws_s3_bucket_object chhcsfun_example_file {
   key = "sampleOne.txt"
   bucket = aws_s3_bucket.chhcsfun.id
   content = "Here is one sample"
+}
+
+resource aws_s3_bucket_object chhcsfun_app_file {
+  key = "app.jar"
+  bucket = aws_s3_bucket.chhcsfun.id
+  source = "../target/demo-0.0.1-SNAPSHOT.jar"
+  etag = filemd5("../target/demo-0.0.1-SNAPSHOT.jar")
 }
 
 output id {

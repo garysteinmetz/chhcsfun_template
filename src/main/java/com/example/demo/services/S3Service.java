@@ -19,24 +19,24 @@ import java.util.List;
 
 @Service
 public class S3Service {
-    @Value("${aws.user.access.key}") String accessKey;
-    @Value("${aws.user.secret.key}") String secretKey;
-    @Value("${aws.region}") String awsRegion;
+    //@Value("${aws.user.access.key}") String accessKey;
+    //@Value("${aws.user.secret.key}") String secretKey;
+    //@Value("${aws.region}") String awsRegion;
 
     AmazonS3 s3client;
 
     @PostConstruct
     public void init() {
         //
-        AWSCredentials credentials = new BasicAWSCredentials(
-                accessKey,
-                secretKey
-        );
+        //AWSCredentials credentials = new BasicAWSCredentials(
+        //        accessKey,
+        //        secretKey
+        //);
         //
         s3client = AmazonS3ClientBuilder
                 .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.fromName(awsRegion))
+                //.withCredentials(new AWSStaticCredentialsProvider(credentials))
+                //.withRegion(Regions.fromName(awsRegion))
                 .build();
     }
     //
@@ -59,6 +59,21 @@ public class S3Service {
                 //
                 outValue.add(s3ObjectSummary.getKey());
             }
+        }
+        ListVersionsRequest listVersionsRequest = new ListVersionsRequest();
+        listVersionsRequest.setBucketName(bucketName);
+        listVersionsRequest.setPrefix(prefix);
+        VersionListing versionListing = s3client.listVersions(listVersionsRequest);
+        List<S3VersionSummary> versionSummaries = versionListing.getVersionSummaries();
+        for (S3VersionSummary nextVersion : versionSummaries) {
+            System.out.println("ZZZ nextVersion key - " + nextVersion.getKey());
+            System.out.println("ZZZ nextVersion version - " + nextVersion.getVersionId());
+            System.out.println("ZZZ nextVersion latest - " + nextVersion.isLatest());
+            System.out.println("ZZZ nextVersion storageClass - " + nextVersion.getStorageClass());
+            System.out.println("ZZZ nextVersion lastModified - " + nextVersion.getLastModified());
+            System.out.println("ZZZ nextVersion deleteMarker - " + nextVersion.isDeleteMarker());
+            System.out.println("ZZZ nextVersion size - " + nextVersion.getSize());
+            System.out.println("ZZZ nextVersion owner - " + nextVersion.getOwner());
         }
         return outValue;
     }

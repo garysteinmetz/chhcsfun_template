@@ -13,7 +13,7 @@ import java.util.Optional;
 @Component
 //@WebFilter(urlPatterns = "/happy.html")
 public class InitFilter implements Filter {
-    @Value("${aws.cognito.oauth2.authorize.url}")
+    @Value("${tf.var.aws.cognito.oauth2.authorize.url}")
     String loginUrl;
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

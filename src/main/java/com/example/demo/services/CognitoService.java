@@ -26,10 +26,10 @@ import java.util.List;
 
 @Service
 public class CognitoService {
-    @Value("${aws.user.access.key}") String accessKey;
-    @Value("${aws.user.secret.key}") String secretKey;
-    @Value("${aws.region}") String awsRegion;
-    @Value("${aws.cognito.user.pool.id}") String userPoolId;
+    //@Value("${aws.user.access.key}") String accessKey;
+    //@Value("${aws.user.secret.key}") String secretKey;
+    //@Value("${aws.region}") String awsRegion;
+    @Value("${tf.var.aws.cognito.user.pool.id}") String userPoolId;
 
     AWSCognitoIdentityProvider cognitoIdentityProvider;
     AmazonCognitoIdentity cognitoIdentity;
@@ -38,20 +38,17 @@ public class CognitoService {
     @PostConstruct
     public void init() {
         //
-        AWSCredentials credentials = new BasicAWSCredentials(
-                accessKey,
-                secretKey
-        );
+        //AWSCredentials credentials = new BasicAWSCredentials();
         //
         cognitoIdentityProvider = AWSCognitoIdentityProviderClientBuilder
                 .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.fromName(awsRegion))
+                //.withCredentials(new AWSStaticCredentialsProvider(credentials))
+                //.withRegion(Regions.fromName(awsRegion))
                 .build();
         cognitoIdentity = AmazonCognitoIdentityClientBuilder
                 .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.fromName(awsRegion))
+                //.withCredentials(new AWSStaticCredentialsProvider(credentials))
+                //.withRegion(Regions.fromName(awsRegion))
                 .build();
     }
     public boolean isUserInGroup(UserSession userSession, String groupName) throws JsonProcessingException {

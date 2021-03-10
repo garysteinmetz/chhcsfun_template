@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @ConditionalOnProperty(
-        value="aws.enabled",
+        value="tf.var.aws.enabled",
         havingValue = "false",
         matchIfMissing = true)
 @PropertySource("classpath:local.properties")

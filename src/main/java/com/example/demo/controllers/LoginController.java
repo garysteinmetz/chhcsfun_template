@@ -32,13 +32,13 @@ import java.util.*;
 @Controller
 public class LoginController {
 
-    @Value("${aws.cognito.client.id}")
+    @Value("${tf.var.aws.cognito.client.id}")
     String awsCognitoClientId;
 
-    @Value("${aws.cognito.client.secret}")
+    @Value("${tf.var.aws.cognito.client.secret}")
     String awsCognitoClientSecret;
 
-    @Value("${aws.cognito.oauth2.token.url}")
+    @Value("${tf.var.aws.cognito.oauth2.token.url}")
     String awsCognitoOauth2TokenUrl;
 
     @ResponseBody
