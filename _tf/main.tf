@@ -5,12 +5,28 @@ locals {
   # Note - S3 bucket names must be unique througout AWS so append user ID to ensure uniqueness
   bucket_name = "chhcs.${data.aws_caller_identity.current.user_id}"
   lightsail_startup_script = <<EOF
+sudo su ${var.APP_OS_USER}
+cd $(getent passwd ${var.APP_OS_USER} | cut -d: -f6)
 sudo yum -y install java-1.8.0-openjdk-devel.x86_64
 sudo update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
 sudo aws configure set aws_access_key_id "${aws_iam_access_key.chhcsfun_lightsail_user.id}"
 sudo aws configure set aws_secret_access_key "${aws_iam_access_key.chhcsfun_lightsail_user.secret}"
 sudo aws configure set default.region "${data.aws_region.current.name}"
-sudo aws s3 cp s3://${local.bucket_name}/app.jar /app.jar 1> /resultUploadingApp.txt 2> /errorUploadingApp.txt
+sudo aws s3 cp s3://${local.bucket_name}/app.jar ./app.jar 1> ./resultDownloadApp.txt 2> ./errorDownloadApp.txt
+echo "" > ./initEnv.sh
+echo "export 'TF_VAR_AWS_COGNITO_CLIENT_ID=${var.AWS_COGNITO_CLIENT_ID}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_COGNITO_CLIENT_SECRET=${var.AWS_COGNITO_CLIENT_SECRET}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_COGNITO_GROUP_DEVELOPERS=${var.AWS_COGNITO_GROUP_DEVELOPERS}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=${var.AWS_COGNITO_OAUTH2_AUTHORIZE_URL}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=${var.AWS_COGNITO_OAUTH2_TOKEN_URL}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_COGNITO_USER_POOL_ID=${var.AWS_COGNITO_USER_POOL_ID}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=${var.AWS_DYNAMODB_TABLE_NAME_USERAPPDATA}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_S3_BUCKET_NAME_CONTENT=${var.AWS_S3_BUCKET_NAME_CONTENT}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_S3_BUCKET_PERUSERLIMIT=${var.AWS_S3_BUCKET_PERUSERLIMIT}'" >> ./initEnv.sh
+chmod 777 ./initEnv.sh
+source ./initEnv.sh
+echo "source ./initEnv.sh" >> ./.bashrc
+nohup java -jar ./app.jar
 EOF
 }
 
