@@ -4,6 +4,7 @@ data aws_region current {}
 locals {
   # Note - S3 bucket names must be unique througout AWS so append user ID to ensure uniqueness
   bucket_name = "chhcs.${data.aws_caller_identity.current.user_id}"
+  lightsail_instance_name = "chhcsfun"
   lightsail_startup_script = <<EOF
 sudo su ${var.APP_OS_USER}
 cd $(getent passwd ${var.APP_OS_USER} | cut -d: -f6)
@@ -12,6 +13,7 @@ sudo update-alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/ja
 sudo aws configure set aws_access_key_id "${aws_iam_access_key.chhcsfun_lightsail_user.id}"
 sudo aws configure set aws_secret_access_key "${aws_iam_access_key.chhcsfun_lightsail_user.secret}"
 sudo aws configure set default.region "${data.aws_region.current.name}"
+sudo aws lightsail put-instance-public-ports --instance-name=${local.lightsail_instance_name} --port-infos ${var.APP_PORTS}
 sudo aws s3 cp s3://${local.bucket_name}/app.jar ./app.jar 1> ./resultDownloadApp.txt 2> ./errorDownloadApp.txt
 echo "" > ./initEnv.sh
 echo "export 'TF_VAR_AWS_COGNITO_CLIENT_ID=${var.AWS_COGNITO_CLIENT_ID}'" >> ./initEnv.sh
@@ -39,7 +41,7 @@ resource aws_iam_user chhcsfun_lightsail_user {
 }
 
 resource aws_lightsail_instance chhcsfun {
-  name = "chhcsfun"
+  name = local.lightsail_instance_name
   availability_zone = "us-east-1a"
   blueprint_id = "amazon_linux"
   bundle_id = "nano_2_0"
@@ -57,6 +59,11 @@ resource aws_iam_policy policy {
       "Action": ["s3:GetObject"],
       "Effect": "Allow",
       "Resource": "arn:aws:s3:::${local.bucket_name}/*"
+    },
+    {
+      "Action": ["lightsail:PutInstancePublicPorts"],
+      "Effect": "Allow",
+      "Resource": "arn:aws:lightsail:${data.aws_region.current.name}:${data.aws_caller_identity.current.user_id}:Instance/*"
     }
   ]
 }
@@ -115,6 +122,10 @@ output caller_arn {
 
 output caller_user {
   value = data.aws_caller_identity.current.user_id
+}
+
+output caller_region {
+  value = data.aws_region.current.name
 }
 
 output lightsail_startup_script {

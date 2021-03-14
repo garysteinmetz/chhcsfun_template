@@ -2,6 +2,10 @@ variable "APP_OS_USER" {
   type = string
   default = "ec2-user"
 }
+variable "APP_PORTS" {
+  type = string
+  default = "fromPort=22,toPort=22,protocol=tcp fromPort=8080,toPort=8080,protocol=tcp"
+}
 variable "AWS_COGNITO_CLIENT_ID" {
   type = string
 }
