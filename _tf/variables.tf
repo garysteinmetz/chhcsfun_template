@@ -1,6 +1,6 @@
 variable "APP_OS_USER" {
   type = string
-  default = "ec2-user"
+  default = "ubuntu"
 }
 variable "APP_PORTS" {
   type = string
