@@ -4,7 +4,7 @@ variable "APP_OS_USER" {
 }
 variable "APP_PORTS" {
   type = string
-  default = "fromPort=22,toPort=22,protocol=tcp fromPort=8080,toPort=8080,protocol=tcp"
+  default = "fromPort=22,toPort=22,protocol=tcp fromPort=80,toPort=80,protocol=tcp fromPort=443,toPort=443,protocol=tcp"
 }
 variable "AWS_COGNITO_CLIENT_ID" {
   type = string

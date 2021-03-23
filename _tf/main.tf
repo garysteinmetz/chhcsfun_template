@@ -55,7 +55,40 @@ echo "source ./initEnv.sh" >> ./.bashrc
 touch 22
 nohup java -jar ./app.jar > app.log &
 touch 23
+sudo apt update > ./apt.update.out
+sudo apt -y install apache2 > ./apt.install.apache2.out
 EOF
+}
+
+#https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/troubleshooting-new-dns-settings-not-in-effect.html#troubleshooting-new-dns-settings-not-in-effect-updated-wrong-hosted-zone
+#  Section - "You have more than one hosted zone with the same name, and you updated the one that isn't associated with the domain"
+#https://registrar.amazon.com/whois
+#https://www.iana.org/domains/root/servers
+data aws_route53_zone primary {
+  name = "chhcsfun.com"
+}
+resource aws_route53_record main {
+  zone_id = data.aws_route53_zone.primary.zone_id
+  name = "chhcsfun.com"
+  type = "A"
+  ttl = 300
+  records = [aws_lightsail_static_ip_attachment.chhcsfun.ip_address]
+}
+resource aws_route53_record www {
+  zone_id = data.aws_route53_zone.primary.zone_id
+  name = "www"
+  type = "CNAME"
+  ttl = 300
+  records = [aws_route53_record.main.name]
+}
+
+resource aws_lightsail_static_ip chhcsfun {
+  name = "chhcsfun_static_ip"
+}
+
+resource aws_lightsail_static_ip_attachment chhcsfun {
+  static_ip_name = aws_lightsail_static_ip.chhcsfun.id
+  instance_name = aws_lightsail_instance.chhcsfun.id
 }
 
 resource aws_iam_access_key chhcsfun_lightsail_user {
