@@ -64,6 +64,16 @@ EOF
 #  Section - "You have more than one hosted zone with the same name, and you updated the one that isn't associated with the domain"
 #https://registrar.amazon.com/whois
 #https://www.iana.org/domains/root/servers
+#https://certbot.eff.org/lets-encrypt/ubuntufocal-apache
+#sudo vi /etc/apache2/sites-available/000-default-le-ssl.conf
+#https://medium.com/@codebyamir/using-apache-as-a-reverse-proxy-for-spring-boot-embedded-tomcat-f704da73e7c8
+#sudo a2enmod proxy_http
+#sudo a2enmod headers
+#sudo service apache2 start
+#ProxyPass / http://127.0.0.1:8080/
+#RequestHeader set X-Forwarded-Proto https
+#RequestHeader set X-Forwarded-Port 443
+#ProxyPreserveHost On
 data aws_route53_zone primary {
   name = "chhcsfun.com"
 }
