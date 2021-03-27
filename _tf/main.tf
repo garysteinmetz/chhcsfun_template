@@ -74,6 +74,27 @@ EOF
 #RequestHeader set X-Forwarded-Proto https
 #RequestHeader set X-Forwarded-Port 443
 #ProxyPreserveHost On
+#https://httpd.apache.org/docs/2.4/rewrite/remapping.html
+#<If "%{HTTP_HOST} =~ '^www\.(.*)$'">
+#    RedirectMatch (.*) https://eyhhh.com$1
+#</If>
+#<If "%{HTTP_HOST} =~ /www\./">
+#    RedirectMatch (.*) https://eyhhh.com$1
+#</If>
+#https://httpd.apache.org/docs/current/expr.html
+#<If "%{HTTP_HOST} =~ /www\./">
+#    RedirectMatch (.*) https://${SERVER_NAME}$1
+#</If>
+#https://stackoverflow.com/questions/4834141/apache-php-any-way-to-retrieve-the-servername-setting-via-php
+#https://stackoverflow.com/questions/48972967/apache-server-name-not-resolving-to-servername
+#https://cwiki.apache.org/confluence/display/HTTPD/FAQ#Why_does_Apache_ask_for_my_password_twice_before_serving_a_file.3F
+
+
+# Note - Use eTag
+data aws_s3_bucket chhcsfun {
+  bucket = local.bucket_name
+}
+
 data aws_route53_zone primary {
   name = "chhcsfun.com"
 }
@@ -115,7 +136,7 @@ resource aws_lightsail_instance chhcsfun {
   blueprint_id = "ubuntu_20_04"
   bundle_id = "nano_2_0"
   user_data = local.lightsail_startup_script
-  depends_on = [aws_s3_bucket.chhcsfun, aws_s3_bucket_object.chhcsfun_app_file]
+  depends_on = [data.aws_s3_bucket.chhcsfun, aws_s3_bucket_object.chhcsfun_app_file]
 }
 
 resource aws_iam_policy policy {
@@ -156,21 +177,15 @@ resource aws_iam_policy_attachment chhcsfun_policy_attachment {
   policy_arn = aws_iam_policy.policy.arn
 }
 
-# Note - Use eTag
-resource aws_s3_bucket chhcsfun {
-  bucket = local.bucket_name
-  acl = "private"
-}
-
 resource aws_s3_bucket_object chhcsfun_example_file {
   key = "sampleOne.txt"
-  bucket = aws_s3_bucket.chhcsfun.id
+  bucket = data.aws_s3_bucket.chhcsfun.id
   content = "Here is one sample"
 }
 
 resource aws_s3_bucket_object chhcsfun_app_file {
   key = "app.jar"
-  bucket = aws_s3_bucket.chhcsfun.id
+  bucket = data.aws_s3_bucket.chhcsfun.id
   source = "../target/demo-0.0.1-SNAPSHOT.jar"
   etag = filemd5("../target/demo-0.0.1-SNAPSHOT.jar")
 }

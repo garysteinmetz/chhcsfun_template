@@ -41,3 +41,16 @@ Cognito Settings (for user pool 'chhcsfun')
 
 Create SSL certificate for ELB in AWS Certificate Manager
   - Click on the 'Pending validation' option and select 'Create record in Route 53'
+
+## Install and Configure the Server
+
+Generate user and get key-secret pair
+Create S3 bucket with format 'chhcsfun.<AWS_ACCOUNT_ID>'
+Run `aws configure` and enter values
+
+Go to the `_tf` subdirectory
+Run `terraform init`
+Run `terraform apply`
+
+Set environment variables
+
