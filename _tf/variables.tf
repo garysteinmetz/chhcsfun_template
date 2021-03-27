@@ -1,10 +1,10 @@
 variable "APP_OS_USER" {
   type = string
-  default = "ec2-user"
+  default = "ubuntu"
 }
 variable "APP_PORTS" {
   type = string
-  default = "fromPort=22,toPort=22,protocol=tcp fromPort=8080,toPort=8080,protocol=tcp"
+  default = "fromPort=22,toPort=22,protocol=tcp fromPort=80,toPort=80,protocol=tcp fromPort=443,toPort=443,protocol=tcp"
 }
 variable "AWS_COGNITO_CLIENT_ID" {
   type = string
@@ -32,4 +32,11 @@ variable "AWS_S3_BUCKET_NAME_CONTENT" {
 }
 variable "AWS_S3_BUCKET_PERUSERLIMIT" {
   type = string
+}
+variable "DOMAIN_NAME" {
+  type = string
+}
+variable "S3_BUCKET_NAME_PREFIX" {
+  type = string
+  default = "content."
 }

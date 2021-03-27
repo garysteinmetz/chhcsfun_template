@@ -41,3 +41,56 @@ Cognito Settings (for user pool 'chhcsfun')
 
 Create SSL certificate for ELB in AWS Certificate Manager
   - Click on the 'Pending validation' option and select 'Create record in Route 53'
+
+## Install and Configure the Server
+
+Generate user and get key-secret pair
+Create S3 bucket with format 'content.<DOMAIN_NAME_HERE>'
+Run `aws configure` and enter values
+Register hosted zone at https://console.aws.amazon.com/route53/v2/hostedzones
+
+Go to the `_tf` subdirectory
+Run `terraform init`
+Run `terraform apply`
+
+Set environment variables
+
+Reference - https://certbot.eff.org/lets-encrypt/ubuntufocal-apache
+
+```
+curl http://localhost
+curl http://localhost:8080
+sudo snap install core
+sudo snap refresh core
+sudo apt-get remove certbot
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+sudo certbot --apache
+  - Enter email address
+  - Enter 'Y' to agree with the 'Terms of Service'
+  - Determine whether you'd like to receive email from the EFF org
+  - Enter the root domain then a comma then the 'www.' subdomain
+  - Enter '2' to select the '000-default-le-ssl.conf' virtual host for the 'www.' subdomain
+Wait a few minutes then try to access the 'https' version of the URL (including 'www.')
+
+sudo a2enmod proxy_http
+sudo a2enmod headers
+
+sudo service apache2 stop
+vi /etc/apache2/sites-available/000-default-le-ssl.conf
+  - Put the following just above the '</VirtualHost>' end tag at the bottom
+    - Replace '<DOMAIN_NAME_HERE>' with the correct domain name
+ProxyPass / http://127.0.0.1:8080/
+RequestHeader set X-Forwarded-Proto https
+RequestHeader set X-Forwarded-Port 443
+ProxyPreserveHost On
+<If "%{HTTP_HOST} =~ /www\./">
+    RedirectMatch (.*) https://<DOMAIN_NAME_HERE>$1
+</If>
+
+sudo service apache2 start
+```
+
+### Confirm Name Servers Match
+
+https://console.aws.amazon.com/route53/home
