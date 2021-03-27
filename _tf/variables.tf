@@ -33,3 +33,10 @@ variable "AWS_S3_BUCKET_NAME_CONTENT" {
 variable "AWS_S3_BUCKET_PERUSERLIMIT" {
   type = string
 }
+variable "DOMAIN_NAME" {
+  type = string
+}
+variable "S3_BUCKET_NAME_PREFIX" {
+  type = string
+  default = "content."
+}

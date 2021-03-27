@@ -3,8 +3,8 @@ data aws_region current {}
 
 locals {
   # Note - S3 bucket names must be unique througout AWS so append user ID to ensure uniqueness
-  bucket_name = "chhcs.${data.aws_caller_identity.current.user_id}"
-  lightsail_instance_name = "chhcsfun"
+  bucket_name = "${var.S3_BUCKET_NAME_PREFIX}${var.DOMAIN_NAME}"
+  lightsail_instance_name = var.DOMAIN_NAME
   lightsail_startup_script = <<EOF
 sudo su ${var.APP_OS_USER}
 cd $(getent passwd ${var.APP_OS_USER} | cut -d: -f6)
@@ -96,11 +96,11 @@ data aws_s3_bucket chhcsfun {
 }
 
 data aws_route53_zone primary {
-  name = "chhcsfun.com"
+  name = var.DOMAIN_NAME
 }
 resource aws_route53_record main {
   zone_id = data.aws_route53_zone.primary.zone_id
-  name = "chhcsfun.com"
+  name = var.DOMAIN_NAME
   type = "A"
   ttl = 300
   records = [aws_lightsail_static_ip_attachment.chhcsfun.ip_address]
