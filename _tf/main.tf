@@ -76,10 +76,10 @@ EOF
 #ProxyPreserveHost On
 #https://httpd.apache.org/docs/2.4/rewrite/remapping.html
 #<If "%{HTTP_HOST} =~ '^www\.(.*)$'">
-#    RedirectMatch (.*) https://eyhhh.com$1
+#    RedirectMatch (.*) <DOMAIN_NAME_HERE>$1
 #</If>
 #<If "%{HTTP_HOST} =~ /www\./">
-#    RedirectMatch (.*) https://eyhhh.com$1
+#    RedirectMatch (.*) <DOMAIN_NAME_HERE>$1
 #</If>
 #https://httpd.apache.org/docs/current/expr.html
 #<If "%{HTTP_HOST} =~ /www\./">

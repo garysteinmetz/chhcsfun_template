@@ -45,8 +45,9 @@ Create SSL certificate for ELB in AWS Certificate Manager
 ## Install and Configure the Server
 
 Generate user and get key-secret pair
-Create S3 bucket with format 'chhcsfun.<AWS_ACCOUNT_ID>'
+Create S3 bucket with format 'content.<DOMAIN_NAME_HERE>'
 Run `aws configure` and enter values
+Register hosted zone at https://console.aws.amazon.com/route53/v2/hostedzones
 
 Go to the `_tf` subdirectory
 Run `terraform init`
@@ -89,3 +90,7 @@ ProxyPreserveHost On
 
 sudo service apache2 start
 ```
+
+### Confirm Name Servers Match
+
+https://console.aws.amazon.com/route53/home
