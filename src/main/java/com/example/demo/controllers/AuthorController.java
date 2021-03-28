@@ -28,11 +28,11 @@ public class AuthorController {
     @Autowired
     S3Service s3Service;
     @Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
-    @GetMapping("/")
-    public ModelAndView index() throws Exception {
-        //
-        return new ModelAndView("index");
-    }
+    //@GetMapping("/")
+    //public ModelAndView index() throws Exception {
+    //    //
+    //    return new ModelAndView("index");
+    //}
     @ResponseBody
     @GetMapping("/developersList")
     public ResponseEntity developerList() throws Exception {
