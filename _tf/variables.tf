@@ -24,9 +24,6 @@ variable "AWS_COGNITO_OAUTH2_TOKEN_URL" {
 variable "AWS_COGNITO_USER_POOL_ID" {
   type = string
 }
-variable "AWS_DYNAMODB_TABLE_NAME_USERAPPDATA" {
-  type = string
-}
 variable "AWS_S3_BUCKET_NAME_CONTENT" {
   type = string
 }
@@ -39,4 +36,8 @@ variable "DOMAIN_NAME" {
 variable "S3_BUCKET_NAME_PREFIX" {
   type = string
   default = "content."
+}
+variable "DYNAMODB_TABLE_NAME_PREFIX" {
+  type = string
+  default = "userAppData."
 }

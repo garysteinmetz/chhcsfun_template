@@ -46,6 +46,7 @@ Create SSL certificate for ELB in AWS Certificate Manager
 
 Generate user and get key-secret pair
 Create S3 bucket with format 'content.<DOMAIN_NAME_HERE>'
+Create a 'content' subdirectory in this bucket and place an 'index.html' file in it
 Run `aws configure` and enter values
 Register hosted zone at https://console.aws.amazon.com/route53/v2/hostedzones
 
@@ -77,7 +78,7 @@ sudo a2enmod proxy_http
 sudo a2enmod headers
 
 sudo service apache2 stop
-vi /etc/apache2/sites-available/000-default-le-ssl.conf
+sudo vi /etc/apache2/sites-available/000-default-le-ssl.conf
   - Put the following just above the '</VirtualHost>' end tag at the bottom
     - Replace '<DOMAIN_NAME_HERE>' with the correct domain name
 ProxyPass / http://127.0.0.1:8080/
@@ -90,6 +91,15 @@ ProxyPreserveHost On
 
 sudo service apache2 start
 ```
+
+
+
+systemctl --type=service
+systemctl status apache2.service
+cd /etc/systemd/system
+sudo chmod 777 simple-app.service
+sudo systemctl enable simple-app.service
+sudo systemctl enable simple-app.service
 
 ### Confirm Name Servers Match
 

@@ -4,6 +4,7 @@ data aws_region current {}
 locals {
   # Note - S3 bucket names must be unique througout AWS so append user ID to ensure uniqueness
   bucket_name = "${var.S3_BUCKET_NAME_PREFIX}${var.DOMAIN_NAME}"
+  table_name = "${var.DYNAMODB_TABLE_NAME_PREFIX}${var.DOMAIN_NAME}"
   lightsail_instance_name = var.DOMAIN_NAME
   lightsail_startup_script = <<EOF
 sudo su ${var.APP_OS_USER}
@@ -39,7 +40,7 @@ echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=${var.AWS_COGNITO_OAUTH2_TOKEN
 touch 15
 echo "export 'TF_VAR_AWS_COGNITO_USER_POOL_ID=${var.AWS_COGNITO_USER_POOL_ID}'" >> ./initEnv.sh
 touch 16
-echo "export 'TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=${var.AWS_DYNAMODB_TABLE_NAME_USERAPPDATA}'" >> ./initEnv.sh
+echo "export 'TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=${local.table_name}'" >> ./initEnv.sh
 touch 17
 echo "export 'TF_VAR_AWS_S3_BUCKET_NAME_CONTENT=${var.AWS_S3_BUCKET_NAME_CONTENT}'" >> ./initEnv.sh
 touch 18
@@ -53,10 +54,26 @@ export >> env.out
 touch 21
 echo "source ./initEnv.sh" >> ./.bashrc
 touch 22
-nohup java -jar ./app.jar > app.log &
 touch 23
 sudo apt update > ./apt.update.out
 sudo apt -y install apache2 > ./apt.install.apache2.out
+touch /home/ubuntu/app.sh
+echo "#!/bin/bash" >> /home/ubuntu/app.sh
+echo "source /home/ubuntu/initEnv.sh" >> /home/ubuntu/app.sh
+echo "java -jar /home/ubuntu/app.jar" >> /home/ubuntu/app.sh
+chmod 777 /home/ubuntu/app.sh
+touch /etc/systemd/system/simple-app.service
+echo "[Unit]" >> /etc/systemd/system/simple-app.service
+echo "Description=Your Application" >> /etc/systemd/system/simple-app.service
+echo "" >> /etc/systemd/system/simple-app.service
+echo "[Service]" >> /etc/systemd/system/simple-app.service
+echo "ExecStart=/home/ubuntu/app.sh" >> /etc/systemd/system/simple-app.service
+echo "" >> /etc/systemd/system/simple-app.service
+echo "[Install]" >> /etc/systemd/system/simple-app.service
+echo "WantedBy=multi-user.target" >> /etc/systemd/system/simple-app.service
+chmod 777 /etc/systemd/system/simple-app.service
+sudo systemctl enable simple-app.service
+sudo systemctl start simple-app
 EOF
 }
 
@@ -93,6 +110,10 @@ EOF
 # Note - Use eTag
 data aws_s3_bucket chhcsfun {
   bucket = local.bucket_name
+}
+
+data aws_dynamodb_table chhcsfun {
+  name = local.table_name
 }
 
 data aws_route53_zone primary {
@@ -149,6 +170,11 @@ resource aws_iam_policy policy {
       "Action": ["s3:GetObject"],
       "Effect": "Allow",
       "Resource": "arn:aws:s3:::${local.bucket_name}/*"
+    },
+    {
+      "Action": ["dynamodb:GetItem"],
+      "Effect": "Allow",
+      "Resource": "${data.aws_dynamodb_table.chhcsfun.arn}"
     },
     {
       "Action": ["lightsail:PutInstancePublicPorts"],

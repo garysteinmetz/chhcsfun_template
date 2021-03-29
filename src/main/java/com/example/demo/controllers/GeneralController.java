@@ -66,15 +66,20 @@ public class GeneralController {
         //
         try {
             final String key = "content" + requestUri;
-            System.out.println("ZZZ content - " + key);
-            S3Object fileFromBucket = s3Service.getFileFromBucket(contentBucket, key);
-            ObjectMetadata objectMetadata = fileFromBucket.getObjectMetadata();
-            InputStreamResource inputStreamResource = new InputStreamResource(fileFromBucket.getObjectContent());
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentLength(objectMetadata.getContentLength());
-            httpHeaders.setContentType(getMediaType(objectMetadata));
-            return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
+            if (!key.endsWith("/")) {
+                System.out.println("ZZZ content - " + key);
+                S3Object fileFromBucket = s3Service.getFileFromBucket(contentBucket, key);
+                ObjectMetadata objectMetadata = fileFromBucket.getObjectMetadata();
+                InputStreamResource inputStreamResource = new InputStreamResource(fileFromBucket.getObjectContent());
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.setContentLength(objectMetadata.getContentLength());
+                httpHeaders.setContentType(getMediaType(objectMetadata));
+                return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (AmazonServiceException ase) {
+            ase.printStackTrace();
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
