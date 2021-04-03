@@ -152,6 +152,30 @@ in order to do anything. Add polities to the user so that it has enough privileg
 to administer and maintain the application.
 
 Create S3 bucket with format 'content.<DOMAIN_NAME_HERE>'
+Uncheck 'Block all public access'
+Add the following bucket policy to it
+```
+{
+    "Version": "2012-10-17",
+    "Id": "Policy1617405356323",
+    "Statement": [
+        {
+            "Sid": "Stmt1617405350836",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::content.chhcsfun.com/*"
+        },
+        {
+            "Sid": "Stmt1617405350836",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::content.chhcsfun.com"
+        }
+    ]
+}
+```
 Create a 'content' subdirectory in this bucket and place an 'index.html' file in it
 Run `aws configure` and enter values
 Register hosted zone at https://console.aws.amazon.com/route53/v2/hostedzones
@@ -210,3 +234,96 @@ sudo systemctl enable simple-app.service
 ### Confirm Name Servers Match
 
 https://console.aws.amazon.com/route53/home
+
+
+//
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "One",
+            "Effect": "Allow",
+            "Action": [
+                "s3:DeleteObject",
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::content.chhcsfun.com/*"
+        },
+        {
+            "Sid": "OneAndHalf",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketPolicy",
+                "s3:PutBucketPolicy"
+            ],
+            "Resource": "arn:aws:s3:::content.chhcsfun.com"
+        },
+        {
+            "Sid": "Two",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:DescribeContinuousBackups"
+            ],
+            "Resource": "arn:aws:dynamodb:us-east-1:<AWS_ACCOUNT_ID>:table/userAppData.chhcsfun.com"
+        },
+        {
+            "Sid": "Four",
+            "Effect": "Allow",
+            "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:GetChange",
+                "route53:GetHostedZone",
+                "route53:ListHostedZones",
+                "route53:ListResourceRecordSets",
+                "route53:ListTagsForResource"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Five",
+            "Effect": "Allow",
+            "Action": [
+                "iam:AttachUserPolicy",
+                "iam:CreateAccessKey",
+                "iam:CreatePolicy",
+                "iam:CreateUser",
+                "iam:DeleteAccessKey",
+                "iam:DeletePolicy",
+                "iam:DeleteUser",
+                "iam:DetachUserPolicy",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:GetUser",
+                "iam:ListAccessKeys",
+                "iam:ListEntitiesForPolicy",
+                "iam:ListGroupsForUser",
+                "iam:ListPolicyVersions"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Six",
+            "Effect": "Allow",
+            "Action": [
+                "lightsail:AllocateStaticIp",
+                "lightsail:AttachStaticIp",
+                "lightsail:CreateInstances",
+                "lightsail:DeleteInstance",
+                "lightsail:DetachStaticIp",
+                "lightsail:GetInstance",
+                "lightsail:GetOperation",
+                "lightsail:GetStaticIp",
+                "lightsail:ReleaseStaticIp"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```

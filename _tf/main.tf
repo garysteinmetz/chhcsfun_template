@@ -179,7 +179,7 @@ resource aws_iam_policy policy {
     {
       "Action": ["lightsail:PutInstancePublicPorts"],
       "Effect": "Allow",
-      "Resource": "arn:aws:lightsail:${data.aws_region.current.name}:${data.aws_caller_identity.current.user_id}:Instance/*"
+      "Resource": "arn:aws:lightsail:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:Instance/*"
     }
   ]
 }
