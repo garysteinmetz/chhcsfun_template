@@ -27,6 +27,9 @@ import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
@@ -40,6 +43,9 @@ public class LoginController {
 
     @Value("${tf.var.aws.cognito.oauth2.token.url}")
     String awsCognitoOauth2TokenUrl;
+
+    @Value("${tf.var.aws.cognito.oauth2.authorize.url}")
+    String awsCognitoLoginUrl;
 
     @ResponseBody
     @GetMapping(value = "/userInfo", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -59,8 +65,29 @@ public class LoginController {
         httpSession.invalidate();
         return "You have logged out, refresh any application pages";
     }
+    //https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
     @GetMapping("/login")
-    public ModelAndView login(
+    public String login(@RequestParam(name="url", required=true) String url) throws Exception {
+        //
+        URI callbackUrl = URI.create(url);
+        URI oauthTwoCallbackUrl = new URI(
+                callbackUrl.getScheme(), null, callbackUrl.getHost(), callbackUrl.getPort(),
+                "/oauthTwoCallback", null, null);
+        //
+        StringBuilder sb = new StringBuilder("redirect:");
+        sb.append(awsCognitoLoginUrl);
+        //sb.append(oauthTwoCallbackUrl.toString());
+        sb.append("&redirect_uri=");
+        sb.append(URLEncoder.encode(oauthTwoCallbackUrl.toString(), StandardCharsets.UTF_8));
+        sb.append("&state=");
+        sb.append(URLEncoder.encode(callbackUrl.toString(), StandardCharsets.UTF_8));
+        System.out.println("ZZZ LoginUrl - " + sb);
+        //
+        return sb.toString();
+    }
+    //https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
+    @GetMapping("/oauthTwoCallback")
+    public ModelAndView oauthTwoCallback(
             @RequestParam(name="code", required=true) String code,
             @RequestParam(name="state", required=false, defaultValue="/") String redirectPath,
             HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) throws Exception {

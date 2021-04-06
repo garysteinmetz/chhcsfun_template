@@ -1,5 +1,11 @@
 # chhcsfun_template
 
+## Goals
+
+Create Billing Report
+
+
+
 Instructions for correctly creating a username-based user pool
 Creating proper application-based user
   - Create a user in the IAM console, get 'Access keys', then assign it correct roles

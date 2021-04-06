@@ -49,6 +49,10 @@ public class GeneralController {
         System.out.println("ZZZ URL Path Within Handler - " + request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
         return a(request.getRequestURI());
     }
+    /*
+    For some reason, submitting the root URL path ("/") gets internally translated in Spring Boot
+    to "/index", hard code this root URL path to file "/index.html" which is a common default setting
+     */
     @ResponseBody
     @RequestMapping(value="/", method=RequestMethod.GET)
     public ResponseEntity<InputStreamResource> root(HttpServletRequest request) throws Exception {
@@ -60,13 +64,13 @@ public class GeneralController {
         System.out.println("ZZZ Root URL Servlet Path - " + request.getServletPath());
         System.out.println("ZZZ Root URL Request URI - " + request.getRequestURI());
         System.out.println("ZZZ Root URL Path Within Handler - " + request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
-        return a("/");
+        return a("/index.html");
     }
     private ResponseEntity<InputStreamResource> a(String requestUri) {
         //
         try {
             final String key = "content" + requestUri;
-            if (!key.endsWith("/")) {
+            //if (!key.endsWith("/")) {
                 System.out.println("ZZZ content - " + key);
                 S3Object fileFromBucket = s3Service.getFileFromBucket(contentBucket, key);
                 ObjectMetadata objectMetadata = fileFromBucket.getObjectMetadata();
@@ -75,9 +79,9 @@ public class GeneralController {
                 httpHeaders.setContentLength(objectMetadata.getContentLength());
                 httpHeaders.setContentType(getMediaType(objectMetadata));
                 return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            //} else {
+            //    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            //}
         } catch (AmazonServiceException ase) {
             ase.printStackTrace();
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
