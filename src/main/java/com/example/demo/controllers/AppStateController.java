@@ -53,7 +53,7 @@ public class AppStateController {
         String outValue;
         System.out.println("ZZZ Received - " + author);
         System.out.println("ZZZ Received - " + appName);
-        //System.out.println("ZZZ Received - " + data);
+        //System.out.println("ZZZ Received - " + user);
         Optional<UserSession> userSession = UserSession.getSession(httpSession);
         if (userSession.isPresent()) {
             Map<String, Object> stringObjectMap = dynamoDBService.retrieveFromUserAppDataTable(
@@ -69,6 +69,7 @@ public class AppStateController {
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
         //return "{}";
     }
+    /*
     @ResponseBody
     @GetMapping("/appState/allApps")
     public ResponseEntity getAllAppsByUser(HttpSession httpSession) throws JsonProcessingException {
@@ -82,6 +83,8 @@ public class AppStateController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
     }
+    */
+    /*
     @ResponseBody
     @GetMapping("/appState/allUsersUnfiltered/{appName}")
     public ResponseEntity getUnfilteredAppDtateForAllUsers(
@@ -101,6 +104,8 @@ public class AppStateController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
     }
+    */
+    /*
     @ResponseBody
     @PostMapping("/appState/{author}/{appName}/allUsers")
     public ResponseEntity getAppStateForAllUsers(
@@ -127,6 +132,7 @@ public class AppStateController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
     }
+    */
     //
     //
     //

@@ -13,14 +13,14 @@ import java.util.Optional;
 @Component
 //@WebFilter(urlPatterns = "/happy.html")
 public class InitFilter implements Filter {
-    @Value("${tf.var.aws.cognito.oauth2.authorize.url}")
-    String loginUrl;
+    //@Value("${tf.var.aws.cognito.oauth2.authorize.url}")
+    //String loginUrl;
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        Cookie loginUrlCookie = new Cookie("loginUrl", loginUrl);
-        ((HttpServletResponse)servletResponse).addCookie(loginUrlCookie);
-        Optional<UserSession> userSessionOptional =
-                UserSession.getSession(((HttpServletRequest)servletRequest).getSession(false));
+        //Cookie loginUrlCookie = new Cookie("loginUrl", loginUrl);
+        //((HttpServletResponse)servletResponse).addCookie(loginUrlCookie);
+        //Optional<UserSession> userSessionOptional =
+        //        UserSession.getSession(((HttpServletRequest)servletRequest).getSession(false));
         //if (userSessionOptional.isPresent()) {
         //    Cookie userDisplayNameCookie = new Cookie("userDisplayName", userSessionOptional.get().getName());
         //    ((HttpServletResponse)servletResponse).addCookie(userDisplayNameCookie);

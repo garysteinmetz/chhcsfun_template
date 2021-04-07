@@ -5,8 +5,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-//import org.springframework.session.data.redis.config.ConfigureRedisAction;
+//import org.springframework.session.user.redis.config.ConfigureRedisAction;
 
+/*
 @Configuration
 @ConditionalOnProperty(
         value="tf.var.aws.enabled",
@@ -29,3 +30,4 @@ public class AwsConfiguration {
     //    return ConfigureRedisAction.NO_OP;
     //}
 }
+*/

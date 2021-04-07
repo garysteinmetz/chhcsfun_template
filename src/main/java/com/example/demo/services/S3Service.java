@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
 @Service
 public class S3Service {
     //@Value("${aws.user.access.key}") String accessKey;
@@ -91,3 +92,4 @@ public class S3Service {
     //
     //public ObjectListing getAllObjectsAuthoredByUser(String bucketName, )
 }
+*/

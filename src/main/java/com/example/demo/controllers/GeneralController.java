@@ -3,8 +3,10 @@ package com.example.demo.controllers;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import com.example.demo.clients.cms.CmsContent;
+import com.example.demo.clients.cms.CmsService;
 import com.example.demo.services.DynamoDBService;
-import com.example.demo.services.S3Service;
+//import com.example.demo.services.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -23,12 +25,15 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class GeneralController {
 
+    //@Autowired
+    //DynamoDBService dynamoDBService;
     @Autowired
-    DynamoDBService dynamoDBService;
-    @Autowired
-    S3Service s3Service;
-    @Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
+    CmsService cmsService;
+    //@Autowired
+    //S3Service s3Service;
+    //@Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
 
+    /*
     @GetMapping("/happy.html")
     public ModelAndView happy() throws Exception {
         //
@@ -36,6 +41,7 @@ public class GeneralController {
         //
         return new ModelAndView("happy");
     }
+    */
     @ResponseBody
     @RequestMapping(value="*", method=RequestMethod.GET)
     public ResponseEntity<InputStreamResource> general(HttpServletRequest request) throws Exception {
@@ -68,33 +74,15 @@ public class GeneralController {
     }
     private ResponseEntity<InputStreamResource> a(String requestUri) {
         //
-        try {
-            final String key = "content" + requestUri;
-            //if (!key.endsWith("/")) {
-                System.out.println("ZZZ content - " + key);
-                S3Object fileFromBucket = s3Service.getFileFromBucket(contentBucket, key);
-                ObjectMetadata objectMetadata = fileFromBucket.getObjectMetadata();
-                InputStreamResource inputStreamResource = new InputStreamResource(fileFromBucket.getObjectContent());
-                HttpHeaders httpHeaders = new HttpHeaders();
-                httpHeaders.setContentLength(objectMetadata.getContentLength());
-                httpHeaders.setContentType(getMediaType(objectMetadata));
-                return new ResponseEntity<InputStreamResource>(inputStreamResource, httpHeaders, HttpStatus.OK);
-            //} else {
-            //    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            //}
-        } catch (AmazonServiceException ase) {
-            ase.printStackTrace();
+        CmsContent content = cmsService.getContent(requestUri);
+        if (content != null) {
+            InputStreamResource inputStreamResource = new InputStreamResource(content.getContent());
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentLength(content.getLength());
+            httpHeaders.setContentType(content.getMediaType());
+            return new ResponseEntity<>(inputStreamResource, httpHeaders, HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-    }
-    private MediaType getMediaType(ObjectMetadata objectMetadata) {
-        MediaType outValue = MediaType.APPLICATION_OCTET_STREAM;
-        try {
-            //
-            outValue = MediaType.parseMediaType(objectMetadata.getContentType());
-        } catch (InvalidMediaTypeException imte) {
-            //
-        }
-        return outValue;
     }
 }

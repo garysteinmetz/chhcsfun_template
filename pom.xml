@@ -37,11 +37,11 @@
 		</dependency>
 		<!--dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<artifactId>spring-boot-starter-user-redis</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-data-redis</artifactId>
+			<artifactId>spring-session-user-redis</artifactId>
 		</dependency-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

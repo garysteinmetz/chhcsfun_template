@@ -99,7 +99,8 @@ public class LoginController {
         httpPost.addHeader(new BasicScheme().authenticate(creds, httpPost, null));
         httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
         //
-        String requestUrl = ensureHttps(request.getRequestURL().toString());
+        //String requestUrl = ensureHttps(request.getRequestURL().toString());
+        String requestUrl = request.getRequestURL().toString();
         System.out.println("ZZZ request.getRequestURL().toString() - " + requestUrl);
         List<NameValuePair> form = new ArrayList<>();
         form.add(new BasicNameValuePair("grant_type", "authorization_code"));
@@ -128,6 +129,7 @@ public class LoginController {
         }
         return new ModelAndView("redirect:" + redirectPath);
     }
+    /*
     private static String ensureHttps(String value) {
         if (value.indexOf("localhost") != -1) {
             return value;
@@ -136,4 +138,5 @@ public class LoginController {
             return "https" + value.substring(colonIndex);
         }
     }
+    */
 }

@@ -2,7 +2,7 @@ package com.example.demo.controllers;
 
 import com.amazonaws.services.s3.model.S3Object;
 import com.example.demo.services.CognitoService;
-import com.example.demo.services.S3Service;
+//import com.example.demo.services.S3Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,18 +21,19 @@ import java.util.Optional;
 
 @Controller
 public class AuthorController {
-    @Value("${tf.var.aws.cognito.group.developers}") String developersGroup;
-    @Value("${tf.var.aws.s3.bucket.perUserLimit}") int perUserLimit;
-    @Autowired
-    CognitoService cognitoService;
-    @Autowired
-    S3Service s3Service;
-    @Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
+    //@Value("${tf.var.aws.cognito.group.developers}") String developersGroup;
+    //@Value("${tf.var.aws.s3.bucket.perUserLimit}") int perUserLimit;
+    //@Autowired
+    //CognitoService cognitoService;
+    //@Autowired
+    //S3Service s3Service;
+    //@Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
     //@GetMapping("/")
     //public ModelAndView index() throws Exception {
     //    //
     //    return new ModelAndView("index");
     //}
+    /*
     @ResponseBody
     @GetMapping("/developersList")
     public ResponseEntity developerList() throws Exception {
@@ -42,10 +43,14 @@ public class AuthorController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new ResponseEntity<>(objectMapper.writeValueAsString(cognitoUsersInGroup), headers, HttpStatus.OK);
     }
+    */
+    /*
     @GetMapping("/content/{author}")
     public ModelAndView saveAppState(@PathVariable String author) throws Exception {
         return new ModelAndView("content");
     }
+    */
+    /*
     @PostMapping("/content")
     public ModelAndView uploadFile(@RequestParam("file") MultipartFile file, HttpSession httpSession
         ) throws Exception {
@@ -68,6 +73,8 @@ public class AuthorController {
         }
         return new ModelAndView("redirect:/");
     }
+    */
+    /*
     @ResponseBody
     @GetMapping("/content/{author}/{content}")
     public ResponseEntity getContent(@PathVariable String author, @PathVariable String content) throws Exception {
@@ -79,6 +86,8 @@ public class AuthorController {
         }
         return new ResponseEntity<>(contentBytes, headers, HttpStatus.OK);
     }
+    */
+    /*
     @ResponseBody
     @GetMapping("/contentList")
     public ResponseEntity developerList(
@@ -106,4 +115,5 @@ public class AuthorController {
         }
         return outValue;
     }
+    */
 }

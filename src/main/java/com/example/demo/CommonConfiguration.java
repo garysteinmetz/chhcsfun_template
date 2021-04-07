@@ -4,6 +4,7 @@ import com.example.demo.controllers.InitFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/*
 @Configuration
 public class CommonConfiguration {
     //@Bean
@@ -11,3 +12,4 @@ public class CommonConfiguration {
     //    return new InitFilter();
     //}
 }
+*/
