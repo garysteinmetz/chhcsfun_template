@@ -1,9 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.services.DynamoDBService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.http.ResponseEntity;
 
-import javax.script.ScriptException;
 import javax.servlet.http.HttpSession;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -69,72 +65,6 @@ public class AppStateController {
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
         //return "{}";
     }
-    /*
-    @ResponseBody
-    @GetMapping("/appState/allApps")
-    public ResponseEntity getAllAppsByUser(HttpSession httpSession) throws JsonProcessingException {
-        Set<String> outValue = new HashSet<>();
-        Optional<UserSession> userSession = UserSession.getSession(httpSession);
-        if (userSession.isPresent()) {
-            String username = userSession.get().getUsername();
-            outValue = dynamoDBService.getAllAppNamesByAuthor(username);
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
-    }
-    */
-    /*
-    @ResponseBody
-    @GetMapping("/appState/allUsersUnfiltered/{appName}")
-    public ResponseEntity getUnfilteredAppDtateForAllUsers(
-            @PathVariable String appName, HttpSession httpSession) throws JsonProcessingException {
-        //
-        String outValue;
-        Optional<UserSession> userSession = UserSession.getSession(httpSession);
-        if (userSession.isPresent()) {
-            String username = userSession.get().getUsername();
-            ObjectMapper objectMapper = new ObjectMapper();
-            ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(username, appName);
-            outValue = objectMapper.writeValueAsString(o);
-        } else {
-            throw new IllegalStateException("User isn't logged in");
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
-    }
-    */
-    /*
-    @ResponseBody
-    @PostMapping("/appState/{author}/{appName}/allUsers")
-    public ResponseEntity getAppStateForAllUsers(
-            @PathVariable String author, @PathVariable String appName,
-            @RequestParam("transform") String transform,
-            @RequestParam(name="overrideData", required=false) String overrideData) throws Exception {
-        //
-        String outValue;
-        ObjectMapper objectMapper = new ObjectMapper();
-        if (overrideData != null) {
-            System.out.println("ZZZ Strategy 1 - " + overrideData);
-            //outValue = objectMapper.writeValueAsString(overrideData);
-            outValue = objectMapper.readTree(overrideData).toString();
-            System.out.println("ZZZ Strategy 12 - " + outValue);
-        } else {
-            System.out.println("ZZZ Strategy 2");
-            ObjectNode o = dynamoDBService.retrieveAppDataForAllUsersAsJsonObject(author, appName);
-            outValue = objectMapper.writeValueAsString(o);
-        }
-        System.out.println("ZZZ transform - " + transform);
-        outValue = stripUnsupportedStrings(transform, outValue);
-        System.out.println("ZZZ outValue - " + outValue);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
-    }
-    */
-    //
-    //
     //
     public String stripUnsupportedStrings(String jsCode, String appData) {
         String outValue;

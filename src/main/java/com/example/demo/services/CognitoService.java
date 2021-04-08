@@ -1,20 +1,10 @@
 package com.example.demo.services;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentity;
 import com.amazonaws.services.cognitoidentity.AmazonCognitoIdentityClientBuilder;
-import com.amazonaws.services.cognitoidentity.model.*;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
 import com.amazonaws.services.cognitoidp.model.*;
-//import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
-//import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClientBuilder;
-//import com.amazonaws.services.identitymanagement.model.ListUsersRequest;
-//import com.amazonaws.services.identitymanagement.model.ListUsersResult;
-//import com.amazonaws.services.identitymanagement.model.User;
 import com.example.demo.controllers.UserSession;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,30 +16,16 @@ import java.util.List;
 
 @Service
 public class CognitoService {
-    //@Value("${aws.user.access.key}") String accessKey;
-    //@Value("${aws.user.secret.key}") String secretKey;
-    //@Value("${aws.region}") String awsRegion;
     @Value("${tf.var.aws.cognito.user.pool.id}") String userPoolId;
 
     AWSCognitoIdentityProvider cognitoIdentityProvider;
     AmazonCognitoIdentity cognitoIdentity;
-    //AmazonIdentityManagement amazonIdentityManagement;
 
     @PostConstruct
     public void init() {
         //
-        //AWSCredentials credentials = new BasicAWSCredentials();
-        //
-        cognitoIdentityProvider = AWSCognitoIdentityProviderClientBuilder
-                .standard()
-                //.withCredentials(new AWSStaticCredentialsProvider(credentials))
-                //.withRegion(Regions.fromName(awsRegion))
-                .build();
-        cognitoIdentity = AmazonCognitoIdentityClientBuilder
-                .standard()
-                //.withCredentials(new AWSStaticCredentialsProvider(credentials))
-                //.withRegion(Regions.fromName(awsRegion))
-                .build();
+        cognitoIdentityProvider = AWSCognitoIdentityProviderClientBuilder.standard().build();
+        cognitoIdentity = AmazonCognitoIdentityClientBuilder.standard().build();
     }
     public boolean isUserInGroup(UserSession userSession, String groupName) throws JsonProcessingException {
         boolean outValue = false;

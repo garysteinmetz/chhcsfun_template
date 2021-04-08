@@ -25,23 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class GeneralController {
 
-    //@Autowired
-    //DynamoDBService dynamoDBService;
     @Autowired
     CmsService cmsService;
-    //@Autowired
-    //S3Service s3Service;
-    //@Value("${tf.var.aws.s3.bucket.name.content}") String contentBucket;
-
-    /*
-    @GetMapping("/happy.html")
-    public ModelAndView happy() throws Exception {
-        //
-        //System.out.println("ZZZ happy - " + dynamoDBService.getEntryValueAsString());
-        //
-        return new ModelAndView("happy");
-    }
-    */
     @ResponseBody
     @RequestMapping(value="*", method=RequestMethod.GET)
     public ResponseEntity<InputStreamResource> general(HttpServletRequest request) throws Exception {
