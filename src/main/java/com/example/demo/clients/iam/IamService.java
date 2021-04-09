@@ -9,7 +9,7 @@ import javax.servlet.http.HttpSession;
 
 public interface IamService {
     void logout();
-    String processLoginRequest(String url);
+    String processLoginRequest(String url, HttpSession httpSession);
     String processOauthTwoCallback(String code, String redirectPath,
             HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession);
     UserSession getUserSession();

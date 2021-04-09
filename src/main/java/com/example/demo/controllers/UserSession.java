@@ -16,10 +16,14 @@ public class UserSession implements Serializable {
     //
     private String oauthToken;
     //
-    private UserSession(Reader reader) throws IOException {
+    private UserSession(Reader reader) {
         //
-        oauthToken = convertReaderToUtfEightString(reader);
-        System.out.println("ZZZ oauthToken - " + oauthToken);
+        try {
+            oauthToken = convertReaderToUtfEightString(reader);
+            System.out.println("ZZZ oauthToken - " + oauthToken);
+        } catch (IOException ioe) {
+            throw new IllegalStateException(ioe);
+        }
         //
         //
         /*
@@ -59,37 +63,41 @@ public class UserSession implements Serializable {
     private String getOauthToken() {
         return oauthToken;
     }
-    public String getUserId() throws JsonProcessingException {
+    public String getUserId() {
         return getUserCharacteristic("sub");
     }
-    public String getUsername() throws JsonProcessingException {
+    public String getUsername() {
         return getUserCharacteristic("cognito:username");
     }
-    public String getName() throws JsonProcessingException {
+    public String getName() {
         return getUserCharacteristic("name");
     }
-    public String getEmail() throws JsonProcessingException {
+    public String getEmail() {
         return getUserCharacteristic("email");
     }
-    private String getUserCharacteristic(String characteristic) throws JsonProcessingException {
-        String outValue;
-        ObjectMapper om = new ObjectMapper();
-        //id_token
-        //access_token
-        //refresh_token
-        //expires_in
-        //token_type
-        Map<?, ?> map = om.readValue(oauthToken, Map.class);
-        String idToken = map.get("id_token") + "";
-        //System.out.println("ZZZ idToken - " + idToken);
-        String[] idParts = idToken.split("\\.");
-        String idPayloadBase64 = idParts[1];
-        String payload = new String(Base64.getDecoder().decode(idPayloadBase64), Consts.UTF_8);
-        //System.out.println("ZZZ payload = " + payload);
-        Map<?, ?> payloadMap = om.readValue(payload, Map.class);
-        outValue = ((String)payloadMap.get(characteristic));
-        //System.out.println("ZZZ sub = " + outValue);
-        return outValue;
+    private String getUserCharacteristic(String characteristic) {
+        try {
+            String outValue;
+            ObjectMapper om = new ObjectMapper();
+            //id_token
+            //access_token
+            //refresh_token
+            //expires_in
+            //token_type
+            Map<?, ?> map = om.readValue(oauthToken, Map.class);
+            String idToken = map.get("id_token") + "";
+            //System.out.println("ZZZ idToken - " + idToken);
+            String[] idParts = idToken.split("\\.");
+            String idPayloadBase64 = idParts[1];
+            String payload = new String(Base64.getDecoder().decode(idPayloadBase64), Consts.UTF_8);
+            //System.out.println("ZZZ payload = " + payload);
+            Map<?, ?> payloadMap = om.readValue(payload, Map.class);
+            outValue = ((String) payloadMap.get(characteristic));
+            //System.out.println("ZZZ sub = " + outValue);
+            return outValue;
+        } catch (JsonProcessingException jpe) {
+            throw new IllegalStateException(jpe);
+        }
     }
     private static String convertReaderToUtfEightString(Reader reader) throws IOException {
         StringBuilder outValue = new StringBuilder();
@@ -100,7 +108,7 @@ public class UserSession implements Serializable {
         }
         return outValue.toString();
     }
-    public static void createSession(Reader reader, HttpSession httpSession) throws IOException {
+    public static void createSession(Reader reader, HttpSession httpSession) {
         UserSession userSession = new UserSession(reader);
         httpSession.setAttribute("userSession", userSession);
     }

@@ -48,7 +48,7 @@ public class AwsIamService implements IamService {
     }
 
     @Override
-    public String processLoginRequest(String url) {
+    public String processLoginRequest(String url, HttpSession httpSession) {
         //
         try {
             URI callbackUrl = URI.create(url);

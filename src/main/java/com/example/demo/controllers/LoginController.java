@@ -40,7 +40,7 @@ public class LoginController {
 
     @ResponseBody
     @GetMapping(value = "/userInfo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> userInfo(HttpSession httpSession) throws Exception {
+    public Map<String, Object> userInfo(HttpSession httpSession) {
         Map<String, Object> outValue = new HashMap<>();
         outValue.put("isLoggedIn", false);
         Optional<UserSession> session = UserSession.getSession(httpSession);
@@ -52,21 +52,21 @@ public class LoginController {
     }
     @ResponseBody
     @GetMapping("/logout")
-    public String logout(HttpSession httpSession) throws Exception {
+    public String logout(HttpSession httpSession) {
         httpSession.invalidate();
         return "You have logged out, refresh any application pages";
     }
     //https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
     @GetMapping("/login")
-    public String login(@RequestParam(name="url", required=true) String url) throws Exception {
-        return iamService.processLoginRequest(url);
+    public String login(@RequestParam(name="url", required=true) String url, HttpSession httpSession) {
+        return iamService.processLoginRequest(url, httpSession);
     }
     //https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
     @GetMapping("/oauthTwoCallback")
     public String oauthTwoCallback(
             @RequestParam(name="code", required=true) String code,
             @RequestParam(name="state", required=false, defaultValue="/") String redirectPath,
-            HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) throws Exception {
+            HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) {
         return iamService.processOauthTwoCallback(code, redirectPath, request, httpResponse, httpSession);
     }
     /*
