@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.clients.iam.IamService;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -34,18 +35,8 @@ import java.util.*;
 
 @Controller
 public class LoginController {
-
-    @Value("${tf.var.aws.cognito.client.id}")
-    String awsCognitoClientId;
-
-    @Value("${tf.var.aws.cognito.client.secret}")
-    String awsCognitoClientSecret;
-
-    @Value("${tf.var.aws.cognito.oauth2.token.url}")
-    String awsCognitoOauth2TokenUrl;
-
-    @Value("${tf.var.aws.cognito.oauth2.authorize.url}")
-    String awsCognitoLoginUrl;
+    @Autowired
+    IamService iamService;
 
     @ResponseBody
     @GetMapping(value = "/userInfo", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,66 +59,15 @@ public class LoginController {
     //https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
     @GetMapping("/login")
     public String login(@RequestParam(name="url", required=true) String url) throws Exception {
-        //
-        URI callbackUrl = URI.create(url);
-        URI oauthTwoCallbackUrl = new URI(
-                callbackUrl.getScheme(), null, callbackUrl.getHost(), callbackUrl.getPort(),
-                "/oauthTwoCallback", null, null);
-        //
-        StringBuilder sb = new StringBuilder("redirect:");
-        sb.append(awsCognitoLoginUrl);
-        //sb.append(oauthTwoCallbackUrl.toString());
-        sb.append("&redirect_uri=");
-        sb.append(URLEncoder.encode(oauthTwoCallbackUrl.toString(), StandardCharsets.UTF_8));
-        sb.append("&state=");
-        sb.append(URLEncoder.encode(callbackUrl.toString(), StandardCharsets.UTF_8));
-        System.out.println("ZZZ LoginUrl - " + sb);
-        //
-        return sb.toString();
+        return iamService.processLoginRequest(url);
     }
     //https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
     @GetMapping("/oauthTwoCallback")
-    public ModelAndView oauthTwoCallback(
+    public String oauthTwoCallback(
             @RequestParam(name="code", required=true) String code,
             @RequestParam(name="state", required=false, defaultValue="/") String redirectPath,
             HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) throws Exception {
-        //
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(awsCognitoOauth2TokenUrl);
-        //
-        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(awsCognitoClientId, awsCognitoClientSecret);
-        httpPost.addHeader(new BasicScheme().authenticate(creds, httpPost, null));
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        //
-        //String requestUrl = ensureHttps(request.getRequestURL().toString());
-        String requestUrl = request.getRequestURL().toString();
-        System.out.println("ZZZ request.getRequestURL().toString() - " + requestUrl);
-        List<NameValuePair> form = new ArrayList<>();
-        form.add(new BasicNameValuePair("grant_type", "authorization_code"));
-        form.add(new BasicNameValuePair("redirect_uri", requestUrl));
-        form.add(new BasicNameValuePair("code", code));
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
-        httpPost.setEntity(entity);
-        //
-        CloseableHttpResponse response = client.execute(httpPost);
-        try (
-                InputStream content = response.getEntity().getContent();
-                InputStreamReader inputStreamReader = new InputStreamReader(content, Consts.UTF_8);) {
-            //
-            UserSession.createSession(inputStreamReader, httpSession);
-            String userId = UserSession.getSession(httpSession).get().getUserId();
-            String username = UserSession.getSession(httpSession).get().getUsername();
-            String name = UserSession.getSession(httpSession).get().getName();
-            String email = UserSession.getSession(httpSession).get().getEmail();
-            System.out.println("ZZZ userId - " + userId);
-            System.out.println("ZZZ username - " + username);
-            System.out.println("ZZZ name - " + name);
-            System.out.println("ZZZ email - " + email);
-            //
-            //Cookie userDisplayNameCookie = new Cookie("userDisplayName", name);
-            //httpResponse.addCookie(userDisplayNameCookie);
-        }
-        return new ModelAndView("redirect:" + redirectPath);
+        return iamService.processOauthTwoCallback(code, redirectPath, request, httpResponse, httpSession);
     }
     /*
     private static String ensureHttps(String value) {
