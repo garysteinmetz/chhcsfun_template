@@ -34,11 +34,12 @@ function generateLoginDomStructureImpl(targetId, userInfo) {
         //alert('Here');
     } else {
         //alert('There');
-        var redirectUrl = "&redirect_uri=" + encodeURIComponent(window.location.origin + "/login");
-        var state = "&state=" + encodeURIComponent(document.URL);
+        //var redirectUrl = "&redirect_uri=" + encodeURIComponent(window.location.origin + "/login");
+        //var state = "&state=" + encodeURIComponent(document.URL);
         //
         //var href = baseUrl + path + standardParams + redirectUrl + state;
-        var href = getCookie("loginUrl") + redirectUrl + state;
+        //var href = getCookie("loginUrl") + redirectUrl + state;
+        var href = window.location.origin + "/login?url=" + encodeURIComponent(document.URL);
         var a = document.createElement( "a" );
         $(div).append(a);
         $(a).attr("href", href);

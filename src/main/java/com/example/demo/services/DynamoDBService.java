@@ -1,9 +1,5 @@
 package com.example.demo.services;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.*;
@@ -19,12 +15,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+/*
 @Service
 public class DynamoDBService {
-    @Value("${aws.user.access.key}") String accessKey;
-    @Value("${aws.user.secret.key}") String secretKey;
-    @Value("${aws.region}") String awsRegion;
-    @Value("${aws.dynamodb.table.name.userAppData}") String tableNameUserAppData;
+    @Value("${tf.var.aws.dynamodb.table.name.userAppData}") String tableNameUserAppData;
 
     AmazonDynamoDB dynamoDBClient;
     //
@@ -38,15 +32,15 @@ public class DynamoDBService {
     @PostConstruct
     public void init() {
         //
-        AWSCredentials credentials = new BasicAWSCredentials(
-                accessKey,
-                secretKey
-        );
+        //AWSCredentials credentials = new BasicAWSCredentials(
+        //        accessKey,
+        //        secretKey
+        //);
         //
         dynamoDBClient = AmazonDynamoDBClientBuilder
                 .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.fromName(awsRegion))
+                //.withCredentials(new AWSStaticCredentialsProvider(credentials))
+                //.withRegion(Regions.fromName(awsRegion))
                 .build();
     }
     public void saveToUserAppDataTable(String author, String appName, String username, String appData) {
@@ -204,3 +198,4 @@ public class DynamoDBService {
     //
     //
 }
+*/

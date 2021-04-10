@@ -35,23 +35,23 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<artifactId>spring-boot-starter-user-redis</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-data-redis</artifactId>
-		</dependency>
+			<artifactId>spring-session-user-redis</artifactId>
+		</dependency-->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.5.12</version>
 		</dependency>
-		<dependency>
+		<!--dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>

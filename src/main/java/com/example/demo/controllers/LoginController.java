@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.clients.iam.IamService;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,23 +28,19 @@ import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
 public class LoginController {
-
-    @Value("${aws.cognito.client.id}")
-    String awsCognitoClientId;
-
-    @Value("${aws.cognito.client.secret}")
-    String awsCognitoClientSecret;
-
-    @Value("${aws.cognito.oauth2.token.url}")
-    String awsCognitoOauth2TokenUrl;
+    @Autowired
+    IamService iamService;
 
     @ResponseBody
     @GetMapping(value = "/userInfo", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> userInfo(HttpSession httpSession) throws Exception {
+    public Map<String, Object> userInfo(HttpSession httpSession) {
         Map<String, Object> outValue = new HashMap<>();
         outValue.put("isLoggedIn", false);
         Optional<UserSession> session = UserSession.getSession(httpSession);
@@ -55,52 +52,24 @@ public class LoginController {
     }
     @ResponseBody
     @GetMapping("/logout")
-    public String logout(HttpSession httpSession) throws Exception {
+    public String logout(HttpSession httpSession) {
         httpSession.invalidate();
         return "You have logged out, refresh any application pages";
     }
+    //https://docs.aws.amazon.com/cognito/latest/developerguide/authorization-endpoint.html
     @GetMapping("/login")
-    public ModelAndView login(
+    public String login(@RequestParam(name="url", required=true) String url, HttpSession httpSession) {
+        return iamService.processLoginRequest(url, httpSession);
+    }
+    //https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
+    @GetMapping("/oauthTwoCallback")
+    public String oauthTwoCallback(
             @RequestParam(name="code", required=true) String code,
             @RequestParam(name="state", required=false, defaultValue="/") String redirectPath,
-            HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) throws Exception {
-        //
-        CloseableHttpClient client = HttpClients.createDefault();
-        HttpPost httpPost = new HttpPost(awsCognitoOauth2TokenUrl);
-        //
-        UsernamePasswordCredentials creds = new UsernamePasswordCredentials(awsCognitoClientId, awsCognitoClientSecret);
-        httpPost.addHeader(new BasicScheme().authenticate(creds, httpPost, null));
-        httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
-        //
-        String requestUrl = ensureHttps(request.getRequestURL().toString());
-        System.out.println("ZZZ request.getRequestURL().toString() - " + requestUrl);
-        List<NameValuePair> form = new ArrayList<>();
-        form.add(new BasicNameValuePair("grant_type", "authorization_code"));
-        form.add(new BasicNameValuePair("redirect_uri", requestUrl));
-        form.add(new BasicNameValuePair("code", code));
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
-        httpPost.setEntity(entity);
-        //
-        CloseableHttpResponse response = client.execute(httpPost);
-        try (
-                InputStream content = response.getEntity().getContent();
-                InputStreamReader inputStreamReader = new InputStreamReader(content, Consts.UTF_8);) {
-            //
-            UserSession.createSession(inputStreamReader, httpSession);
-            String userId = UserSession.getSession(httpSession).get().getUserId();
-            String username = UserSession.getSession(httpSession).get().getUsername();
-            String name = UserSession.getSession(httpSession).get().getName();
-            String email = UserSession.getSession(httpSession).get().getEmail();
-            System.out.println("ZZZ userId - " + userId);
-            System.out.println("ZZZ username - " + username);
-            System.out.println("ZZZ name - " + name);
-            System.out.println("ZZZ email - " + email);
-            //
-            //Cookie userDisplayNameCookie = new Cookie("userDisplayName", name);
-            //httpResponse.addCookie(userDisplayNameCookie);
-        }
-        return new ModelAndView("redirect:" + redirectPath);
+            HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) {
+        return iamService.processOauthTwoCallback(code, redirectPath, request, httpResponse, httpSession);
     }
+    /*
     private static String ensureHttps(String value) {
         if (value.indexOf("localhost") != -1) {
             return value;
@@ -109,4 +78,5 @@ public class LoginController {
             return "https" + value.substring(colonIndex);
         }
     }
+    */
 }
