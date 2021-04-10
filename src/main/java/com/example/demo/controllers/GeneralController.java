@@ -1,23 +1,15 @@
 package com.example.demo.controllers;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
 import com.example.demo.clients.cms.CmsContent;
 import com.example.demo.clients.cms.CmsService;
-import com.example.demo.services.DynamoDBService;
-//import com.example.demo.services.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.HandlerMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +21,7 @@ public class GeneralController {
     CmsService cmsService;
     @ResponseBody
     @RequestMapping(value="*", method=RequestMethod.GET)
-    public ResponseEntity<InputStreamResource> general(HttpServletRequest request) throws Exception {
+    public ResponseEntity<InputStreamResource> general(HttpServletRequest request) {
         System.out.println("ZZZ URL Path - " + request.getRequestURI());
         System.out.println("ZZZ URL Context Path - " + request.getContextPath());
         System.out.println("ZZZ URL Path Info - " + request.getPathInfo());
@@ -46,7 +38,7 @@ public class GeneralController {
      */
     @ResponseBody
     @RequestMapping(value="/", method=RequestMethod.GET)
-    public ResponseEntity<InputStreamResource> root(HttpServletRequest request) throws Exception {
+    public ResponseEntity<InputStreamResource> root(HttpServletRequest request) {
         System.out.println("ZZZ Root URL Path - " + request.getRequestURI());
         System.out.println("ZZZ Root URL Context Path - " + request.getContextPath());
         System.out.println("ZZZ Root URL Path Info - " + request.getPathInfo());

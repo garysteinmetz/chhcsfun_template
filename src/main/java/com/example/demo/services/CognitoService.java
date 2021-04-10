@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
 @Service
 public class CognitoService {
     @Value("${tf.var.aws.cognito.user.pool.id}") String userPoolId;
@@ -81,3 +82,4 @@ public class CognitoService {
         return outValue;
     }
 }
+*/

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+/*
 @Service
 public class DynamoDBService {
     @Value("${tf.var.aws.dynamodb.table.name.userAppData}") String tableNameUserAppData;
@@ -197,3 +198,4 @@ public class DynamoDBService {
     //
     //
 }
+*/

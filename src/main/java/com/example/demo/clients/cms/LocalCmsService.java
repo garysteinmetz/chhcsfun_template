@@ -16,7 +16,7 @@ public class LocalCmsService implements CmsService {
 
     @PostConstruct
     public void init() {
-        File baseDir = new File(localCmsPath);
+        File baseDir = new File(localCmsPath, "content");
         if (!baseDir.isDirectory()) {
             throw new IllegalStateException("'" + localCmsPath + "' isn't a directory");
         }
@@ -25,7 +25,7 @@ public class LocalCmsService implements CmsService {
     public CmsContent getContent(String key) {
         CmsContent outValue = null;
         try {
-            File baseDir = new File(localCmsPath);
+            File baseDir = new File(localCmsPath, "content");
             File targetFile = new File(baseDir, key);
             if (targetFile.isFile()) {
                 return new CmsContent(

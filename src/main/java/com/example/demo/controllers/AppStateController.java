@@ -1,6 +1,8 @@
 package com.example.demo.controllers;
 
-import com.example.demo.services.DynamoDBService;
+//import com.example.demo.services.DynamoDBService;
+import com.example.demo.clients.user.UserData;
+import com.example.demo.clients.user.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
@@ -19,19 +21,20 @@ import java.util.*;
 
 @Controller
 public class AppStateController {
+    //@Autowired
+    //DynamoDBService dynamoDBService;
     @Autowired
-    DynamoDBService dynamoDBService;
+    UserService userService;
     @ResponseBody
-    @PostMapping("/appState/{author}/{appName}")
-    public ResponseEntity saveAppState(@PathVariable String author, @PathVariable String appName,
-                                       @RequestParam("appData") String data, HttpSession httpSession) throws Exception {
+    @PostMapping("/appState/{appName}")
+    public ResponseEntity saveAppState(
+            @PathVariable String appName, @RequestParam("appData") String data, HttpSession httpSession) {
         //
-        System.out.println("ZZZ Received - " + author);
         System.out.println("ZZZ Received - " + appName);
         System.out.println("ZZZ Received - " + data);
         Optional<UserSession> userSession = UserSession.getSession(httpSession);
         if (userSession.isPresent()) {
-            dynamoDBService.saveToUserAppDataTable(author, appName, userSession.get().getUsername(), data);
+            userService.saveToUserAppDataTable(appName, userSession.get().getUsername(), data);
         } else {
             throw new IllegalStateException("User isn't logged in");
         }
@@ -42,28 +45,20 @@ public class AppStateController {
         //return "{}";
     }
     @ResponseBody
-    @GetMapping("/appState/{author}/{appName}")
-    public ResponseEntity getAppStateForUser(@PathVariable String author, @PathVariable String appName,
-        HttpSession httpSession) throws Exception {
+    @GetMapping("/appState/{appName}")
+    public ResponseEntity getAppStateForUser(@PathVariable String appName, HttpSession httpSession) {
         //
-        String outValue;
-        System.out.println("ZZZ Received - " + author);
-        System.out.println("ZZZ Received - " + appName);
-        //System.out.println("ZZZ Received - " + user);
+        UserData outValue;
         Optional<UserSession> userSession = UserSession.getSession(httpSession);
         if (userSession.isPresent()) {
-            Map<String, Object> stringObjectMap = dynamoDBService.retrieveFromUserAppDataTable(
-                    author, appName, userSession.get().getUsername());
-            ObjectMapper objectMapper = new ObjectMapper();
-            outValue = objectMapper.writeValueAsString(stringObjectMap);
+            outValue = userService.retrieveFromUserAppDataTable(
+                    appName, userSession.get().getUsername());
         } else {
             throw new IllegalStateException("User isn't logged in");
         }
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        //headers.add("Content-Type", "application/json");
         return new ResponseEntity<>(outValue, headers, HttpStatus.OK);
-        //return "{}";
     }
     //
     public String stripUnsupportedStrings(String jsCode, String appData) {
