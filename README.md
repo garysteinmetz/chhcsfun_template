@@ -2,9 +2,103 @@
 
 ## Goals
 
+## Billing
+
+This setup involves using AWS resources, the usage of some of which
+(e.g. Route53, LightSail) will incur charges billed monthly.
+
+### Viewing Billing
+
+To view the accumulated charges for this month go to
+https://console.aws.amazon.com/billing/home#/ . On that page, click the 'Bills' link
+to view the bills for previous months.
+
+### Create Daily and Monthly Budgets to Send Email Alerts If Too Much Money Is Being Spent
+
+AWS supports the creation of budgets which can send alerts when more than a certain amount
+of money is being charged over a period of time. Create two reports - daily and monthly -
+to catch surprise expenditures early.
+
+These two reports are recommended because the registration or reregistration of a domain
+name could cause a spike both in daily and monthly expenses that just lasts a day.
+Having these two reports should allow both detection of a one-time spike in costs as
+well as a higher-than-normal accumulation of expenses over a longer period (i.e. month).
+
+Follow these instructions for each of the (2) reports - 'Daily' and 'Monthly'.
+
+  - Go to https://console.aws.amazon.com/billing/home
+  - Click the 'Budgets' link in the left column
+  - Click the 'Create a budget' button on the right
+  - Keep the 'Cost budget' radio button selected then click the 'Set your budget' button
+  - Enter a value in the 'Name' field
+    - Daily - CHHCS Fun App Daily Budget
+    - Monthly - CHHCS Fun App Monthly Budget
+  - Select a value in the 'Period' dropdown box
+    - Daily - Daily
+    - Monthly - Monthly
+  - Enter a value in the 'Budgeted amount' field (these are example recommended values)
+    - Daily - 15
+    - Monthly - 20
+  - Click the 'Configure thresholds' button located in the bottom right
+  - In the 'Alert threshold' text box, enter 100
+  - In the 'Email recipients' text area, enter a comma-separated list of the email
+  addresses that should receive an alert
+  - Click the 'Confirm budget' button in the lower right
+  - Review your settings then click the 'Create' button in the lower right
+
+## Phases
+
+## Incremental Development
+
+## Stop AWS Usage
+
+### The Easy Way (Nuclear Bomb)
+
+`To Close Your Account` - Follow the instructions under the `Close your account`
+section of https://aws.amazon.com/premiumsupport/knowledge-center/close-aws-account/ .
+
+  - Positive - This is easy and it could guagentee that you immediately don't
+  incur any additional charges for using AWS.
+  - Negative - This will delete everything, including all user accounts in Cognito
+  and any accumulated data in DynamoDB. Renewal of your registered domain will be
+  turned off.
+    - Reference - https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/troubleshooting-account-closed.html
+
+After closing the AWS account, you have up to 90 days to reopen it by following
+the instructions at https://aws.amazon.com/premiumsupport/knowledge-center/reopen-aws-account/ .
+_After 90 days, you will permanently no longer be able to use AWS with that email account._
+
+### The Hard Way (Surgical Strike)
+
+#### Delete LightSail Server
+
+#### Delete Route53 Domain
+
+#### (Optionally) Delete Cognito Group
+
+You shouldn't be charged by keeping this and it can be reused again.
+
+#### (Optionally) Delete DynamoDB Table
+
+You shouldn't be charged by keeping this and it can be reused again.
+
+#### (Optionally) Delete S3 Bucket
+
+You shouldn't be charged by keeping this and it can be reused again.
+
+### (Optionally) Delete Billing Budgets
+
+
 Create Billing Report
 
+<details>
+  <summary>Here is a list of what to do</summary>
+  ### Instructions
 
+  - Define Goal
+  - List Steps
+  - Execute
+</details>
 
 Instructions for correctly creating a username-based user pool
 Creating proper application-based user
@@ -158,7 +252,7 @@ in order to do anything. Add polities to the user so that it has enough privileg
 to administer and maintain the application.
 
 Create S3 bucket with format 'content.<DOMAIN_NAME_HERE>'
-Uncheck 'Block all public access'
+Uncheck 'Block all public access', make sure everything is unchecked
 Add the following bucket policy to it
 ```
 {
@@ -333,3 +427,66 @@ https://console.aws.amazon.com/route53/home
     ]
 }
 ```
+
+
+Create User and Entities
+
+aws s3 sync --acl public-read --exclude ".*" ./content s3://content.chhcsfun.com/content
+
+
+## Preparations for Setup
+
+### Install the `aws` Command Line Client
+
+### Prepare to Write Down Variable Values Specific to the Application
+
+There are several values listed in these instructions which will only be known by you.
+These values cannot be determined ahead of time. As these values come up, record them
+in a common table that you can reference later.
+
+#### Representation of Variable Values
+
+When these values come up for you to enter, they will appear as their variable name
+and surrounded by the `#` character. So if the variable name `DOMAIN_NAME` has a value
+of `chhcsfun.com`, then when you're asked to enter a statement like the following.
+
+```
+export TF_VAR_DOMAIN_NAME="#DOMAIN_NAME#"
+```
+
+Enter the following instead.
+
+```
+export TF_VAR_DOMAIN_NAME="chhcsfun.com"
+```
+
+#### List of Variable Values
+
+Write down (either electronically or on paper) a table consisting of two columns.
+The left column should be filled with the variable names listed below and in the right
+column write the value of that variable as you discover it.
+
+  - `DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
+
+### Prepare the Account as the Root User
+
+The owner of the account (the one who pays the bills) should _not_ be the one
+who uses the account to create and run the application. The owner can do anything
+without restraint. Instead, the owner should create a special user with limited rights
+to the account. Doing this lowers the likelihood of the following unwanted outcomes.
+
+  - The owner of the account can also log into `https://amazon.com` . If the owner
+  (like a parent) is different than the user deploying the application (like a child),
+  this other user will need the owner's username/password combination to log into
+  the AWS console (`https://aws.amazon.com/`). This will give the other user the
+  ability to order things on Amazon while charging bills to the owner, even if the
+  owner doesn't even know about it!
+  - The owner of the account can do anything in AWS, including needlessly running up
+  larger-than-necessary bills and using services that aren't required to get this
+  application up and running. It's better to create a user which only has permissions
+  to successfully install and use the application.
+
+###
+
+// What Is This?
+// Create 'INSTALLATION.md' File
