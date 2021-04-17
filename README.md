@@ -118,7 +118,127 @@ Follow these instructions for each of the (2) reports - 'Daily' and 'Monthly'.
 
 ## Phases
 
+### Phase 0 - Select an Unused Domain Name and Get Ready to Record Variable Values
+
+#### Select an Unused Domain Name
+
+Think of the domain name (like 'chhcsfun.com' for your web site). You don't need to actually register
+(and pay for) a domain name right now. You will only need to register a domain name once you've
+decided to host your web application on a LightSail server. _A domain name isn't needed to run
+the web application locally but the AWS entities (like the DynamoDB table and Cognito entities)
+will be assigned names that contain the domain name so correctly identifying the desired domain name
+now will allow for migration of the local web application into the cloud._
+
+Note that your selection of a domain name here (obviously) doesn't mean that you have formally
+registered it in AWS. You only register (temporarily own on a yearly basis) a domain and are charged
+by AWS for that registration by following these steps (which can also be used to determine if a domain
+name is available without actually reserving it).
+
+  - Go to https://console.aws.amazon.com/route53/home
+  - Click the 'Domains' link
+  - Click the 'Register Domain' button
+  - Enter your desired domain name into the text box, select your desired extension (which is
+  usually just '.com'), then click the 'Check' button
+    - View the results to find out whether the domain name is available
+    - If your goal is to just find out whether the domain name is available without actually
+    reserving it (and paying for it) right now, just click the 'Cancel' link and stop here
+    without continuing
+  - If the domain name is available, click the 'Add to cart' button then the 'Continue' button
+  - Fill in your contact information, then click the 'Continue' button
+    - Once you reserve the domain, much of this information is available to the public unless
+    you click the 'Enable' radio button under the 'Privacy Protection' section (doing this
+    _should_ hide most of the information from the public)
+  - Under the 'Do you want to automatically renew your domain?' section, consider whether
+  you want your registration of this domain name to automatically renew once it expires,
+  (obviously) auto-renewal will charge your account upon arriving on the renewal date
+    - When in doubt, just select the 'Disable' option which means that you will lose
+    the reservation for the domain name once its term expires _But_ this will also mean
+    that you won't receive reoccurring charges for renewals
+    - Once a reservation expires, _anyone_ can register the domain and (for unknown reasons)
+    the cost to reserve that domain name can go up significantly (even 10 times or more
+    the original reservation cost)
+  - Click the checkbox under the 'Terms and Conditions' section
+  - Click the 'Complete Order' button
+
+Record the domain name as it will be referenced as `#DOMAIN_NAME#` subsequently in these
+instructions.
+
+#### Get Ready to Record Variable Values
+
+There are several values listed in these instructions which will only be known by you.
+These values cannot be determined ahead of time. As these values come up, record them
+in a common table that you can reference later.
+
+##### Representation of Variable Values
+
+When these values come up for you to enter, they will appear as their variable name
+and surrounded by the `#` character. So if the variable name `DOMAIN_NAME` has a value
+of `chhcsfun.com`, then when you're asked to enter a statement like the following.
+
+```
+export TF_VAR_DOMAIN_NAME="#DOMAIN_NAME#"
+```
+
+Enter the following instead.
+
+```
+export TF_VAR_DOMAIN_NAME="chhcsfun.com"
+```
+
+##### List of Variable Values
+
+Write down (either (preferrably) electronically or on paper) a table consisting of two columns.
+The left column should be filled with the variable names listed below and in the right
+column write the value of that variable as you discover it. _Note that some of these values
+should be kept secret so don't share this list with others._
+
+  - `DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
+
+
+### Phase 1 - Local Server with Simulated Calls to AWS
+
+Follow the instructions at
+https://github.com/garysteinmetz/technology_survey_study_materials/blob/master/lessons/bonus_i_have_used_the_online_authoring_tool_to_create_a_simple_game.md .
+
+### Phase 2 - Local Server Integrated with AWS
+
+#### Install `aws` Command-Line Tool
+
+##### Set Up Local `aws` Configurations
+
+`aws` is the command-line program that allows you to read the state of and update
+the configurations to AWS. The functionality of this program nearly matches one-for-one
+what can be done on the AWS website. While a `Terraform` script will be doing the automated
+setup part of the installation, it uses the `aws` configurations stored in the
+`~/.aws/credentials` file. Likewise, having the `aws` program ready-to-use is often
+necessary for a cloud developer.
+
+###### Install `aws` on Windows
+
+On Windows, download the file at https://awscli.amazonaws.com/AWSCLIV2.msi
+and install it onto your Desktop, then run and install it.
+
+Reference - https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html
+
+###### Install `aws` on Mac
+
+On Mac, open a command prompt, go to the Desktop, run the following command, then
+open and run the file that gets downloaded to the Desktop.
+
+```
+curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
+```
+
+Reference - Step 3 of https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-mac.html#cliv2-mac-install-cmd-current-user
+
+
+### Phase 3 - LightSail Server Integrated with AWS
+
 ## Incremental Development
+
+```
+aws s3 sync --acl public-read --exclude ".*" ./content s3://#S3_BUCKET_NAME#/content
+```
 
 ## Stop AWS Usage
 
@@ -142,7 +262,9 @@ _After 90 days, you will permanently no longer be able to use AWS with that emai
 
 #### Delete LightSail Server
 
-#### Delete Route53 Domain
+#### Delete Route53 Domain (Auto-Renew)
+
+#### Delete Route53 Zone
 
 #### (Optionally) Delete Cognito Group
 
