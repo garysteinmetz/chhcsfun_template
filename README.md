@@ -164,6 +164,28 @@ Record the domain name as it will be referenced as `#DOMAIN_NAME#` subsequently 
 instructions. This variable is listed as `DOMAIN_NAME` in the `List of Variable Values`
 section below.
 
+##### Record the AWS Account ID
+
+In the same browser, do the following.
+
+  - Click your name in the top left and record the number next to 'My Account'
+
+It will be referenced as `#AWS_ACCOUNT_ID#` subsequently in these instructions.
+This variable is listed as `AWS_ACCOUNT_ID` in the `List of Variable Values` section below.
+
+##### Always Use the `us-east-1` AWS Region
+
+AWS hosts its services all around the world in well-defined regions. It's important
+to use the same region when you're creating the AWS components for an application.
+(Note that some components, like S3 'buckets' and IAM users are 'global' in that they
+aren't assigned to specific regions. They are region-less.)
+
+For this setup, use the `us-east-1` region. Ensure this setting by doing the following.
+
+  - Go to any AWS page like https://console.aws.amazon.com/console/home
+  - Just right of your name in the top right, click the dropdown and select the
+  `US East (N. Virginia) us-east-1` value
+
 #### Get Ready to Record Variable Values
 
 There are several values listed in these instructions which will only be known by you.
@@ -195,6 +217,7 @@ should be kept secret so don't share this list with others._
 
   - `DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
   - `AWS_ACCOUNT_ID` - This is the unique number assigned to your AWS account
+  - `AWS_REGION` - This should have a value of `us-east-1`
   - `AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
   - `AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
   - `AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
@@ -423,10 +446,13 @@ To add the correct permissions to this specialized DevOps user, do the following
 
 Bookmark Url
 Use this user to login to the AWS console in the future
+Use Incognito user
 
 ##### Create an Access Key for the Specialized DevOps User
 
 login to console
+
+##### Test the `aws` Command-Line Tool
 
 ### Phase 3 - LightSail Server Integrated with AWS
 
