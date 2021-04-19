@@ -161,7 +161,8 @@ name is available without actually reserving it).
   - Click the 'Complete Order' button
 
 Record the domain name as it will be referenced as `#DOMAIN_NAME#` subsequently in these
-instructions.
+instructions. This variable is listed as `DOMAIN_NAME` in the `List of Variable Values`
+section below.
 
 #### Get Ready to Record Variable Values
 
@@ -193,7 +194,14 @@ column write the value of that variable as you discover it. _Note that some of t
 should be kept secret so don't share this list with others._
 
   - `DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
-
+  - `AWS_ACCOUNT_ID` - This is the unique number assigned to your AWS account
+  - `AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
+  - `AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
+  - `AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
+  - `AWS_DEVOPS_ACCESS_KEY_ID` - This is the equivalent of a username for `aws` tool
+  usage for the specialized account
+  - `AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
+  usage for the specialized account
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
 
@@ -231,6 +239,68 @@ curl "https://awscli.amazonaws.com/AWSCLIV2.pkg" -o "AWSCLIV2.pkg"
 
 Reference - Step 3 of https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-mac.html#cliv2-mac-install-cmd-current-user
 
+#### Create a User and Configure the `aws` Tool to Perform Actions as That User
+
+As mentioned, you should not use the same ('root') user who pays the bills as the user
+who installs and maintains the application.
+
+Follow these steps to create this other (specialized 'DevOps') user.
+
+##### Create the Specialized DevOps User Which Will Be Used to Install and Maintain the App
+
+  - Go to https://aws.amazon.com and login as you would on normal Amazon
+  - In the search box, enter 'IAM' and select the 'IAM' result
+  - In the left column, click the 'Users' link
+  - In the 'User name' text box, enter a username of your choice (like 'chhcsfun')
+  - Under 'Access type,' select both 'Progammatic access' (from `aws` tool)
+  and 'AWS Management Console access' (from browser) options
+    - Record this value as the `AWS_DEVOPS_USERNAME` variable value
+  - Under the 'Console password' section, select the 'Custom password' option
+  then enter a password of your choosing
+    - Record this value as the `AWS_DEVOPS_PASSWORD` variable value
+    - This is a secret value that shouldn't be shared with others
+  - Uncheck the 'Require password reset' option
+  - Click the 'Next: Permissions' button
+  - For now, ignore adding permissions and instead click the 'Next: Tags' button
+  - Click the 'Next: Review' button
+  - Click the 'Create user' button
+  - Confirm the 'Success' area appears indicatating that the specialized user
+  has now been created
+  - Record the value in the 'Access key ID' column
+  as the `AWS_DEVOPS_ACCESS_KEY_ID` variable value
+  - Record the value in the 'Secret access key' column
+  as the `AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
+    - This is a secret value that shouldn't be shared with others
+
+Note - There is no way to view the 'Secret access key' value again. The only other option
+is to create another key/secret pair. If that's needed, do the following then update
+the `AWS_DEVOPS_ACCESS_KEY_ID`/`AWS_DEVOPS_SECRET_ACCESS_KEY` variable values.
+Since you've just created these values, you don't need to run these steps now but may
+need to do so in the future.
+
+  - Go to https://console.aws.amazon.com/iam/home and (if necessary) login
+  with your normal Amazon username/password
+  - Click the 'Users' link in the left column
+  - Click the username link (should be the value as the `AWS_DEVOPS_USERNAME` variable)
+  under the 'User name' column
+  - Click the 'Security credentials' tab
+  - Under the 'Access keys' section, click the 'Create access key' button
+  - Record the value in the 'Access key ID' column
+  as the `AWS_DEVOPS_ACCESS_KEY_ID` variable value
+  - Click the 'Show' hyperlink
+  - Record the value in the 'Secret access key' column
+  as the `AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
+    - This is a secret value that shouldn't be shared with others
+  - Click the 'Close' button
+
+##### Login to the AWS Console as the Specialized DevOps User
+
+Bookmark Url
+Use this user to login to the AWS console in the future
+
+##### Create an Access Key for the Specialized DevOps User
+
+login to console
 
 ### Phase 3 - LightSail Server Integrated with AWS
 
