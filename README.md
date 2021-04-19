@@ -293,6 +293,132 @@ need to do so in the future.
     - This is a secret value that shouldn't be shared with others
   - Click the 'Close' button
 
+##### Assign Appropriate Permissions to the Specialized DevOps User
+
+After it's created, the specialized DevOps user can't do anything. Beyond the 'root'
+account (that's the one that can login to Amazon too) which can do anything, other users
+can't do anything unless they are explicitly assigned various rights to do specific
+things within AWS.
+
+In this section, you will be assigning appropriate permissions to the specialized DevOps
+user so that it can install and maintain the web application.
+
+This user needs various permissions including the following.
+  - `DynamoDB` - Read from and write to the application's user information database table
+  - `IAM` - Give the ability to create another user specifically for the web application
+  and assign it permissions it needs to run the application
+  - `S3` - Read and write files
+  - `LightSail` - Create and manage a LightSail server with a static IP address
+  - `Route53` - Add DNS records to route calls from the domain name
+  (like 'https://chhcsfun.com') to the static IP address assigned to the LightSail instance
+
+To add the correct permissions to this specialized DevOps user, do the following.
+
+  - Go to https://console.aws.amazon.com/iam/home and (if necessary) login
+  with your normal Amazon username/password
+  - Click the 'Users' link in the left column
+  - Click the username link (should be the value as the `AWS_DEVOPS_USERNAME` variable)
+  under the 'User name' column
+  - In the 'Permissions' tab under the 'Permissions policies' section, click the
+  'Add inline policy' link
+  - Click the 'JSON' tab
+  - Overwrite the contents in the text area with the contents found in the JSON block
+  below, but make sure to study the content carefully and perform all variable substitutions
+  - Click the 'Review policy' button
+  - In the 'Name' field, enter 'policies_for_user_#AWS_DEVOPS_USERNAME#'
+  - Click the 'Create policy' button
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "One",
+            "Effect": "Allow",
+            "Action": [
+                "s3:DeleteObject",
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::content.chhcsfun.com/*"
+        },
+        {
+            "Sid": "OneAndHalf",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketPolicy",
+                "s3:PutBucketPolicy"
+            ],
+            "Resource": "arn:aws:s3:::content.chhcsfun.com"
+        },
+        {
+            "Sid": "Two",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeTable",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:ListTagsOfResource",
+                "dynamodb:DescribeContinuousBackups"
+            ],
+            "Resource": "arn:aws:dynamodb:us-east-1:<AWS_ACCOUNT_ID>:table/userAppData.chhcsfun.com"
+        },
+        {
+            "Sid": "Four",
+            "Effect": "Allow",
+            "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:GetChange",
+                "route53:GetHostedZone",
+                "route53:ListHostedZones",
+                "route53:ListResourceRecordSets",
+                "route53:ListTagsForResource"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Five",
+            "Effect": "Allow",
+            "Action": [
+                "iam:AttachUserPolicy",
+                "iam:CreateAccessKey",
+                "iam:CreatePolicy",
+                "iam:CreateUser",
+                "iam:DeleteAccessKey",
+                "iam:DeletePolicy",
+                "iam:DeleteUser",
+                "iam:DetachUserPolicy",
+                "iam:GetPolicy",
+                "iam:GetPolicyVersion",
+                "iam:GetUser",
+                "iam:ListAccessKeys",
+                "iam:ListEntitiesForPolicy",
+                "iam:ListGroupsForUser",
+                "iam:ListPolicyVersions"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "Six",
+            "Effect": "Allow",
+            "Action": [
+                "lightsail:AllocateStaticIp",
+                "lightsail:AttachStaticIp",
+                "lightsail:CreateInstances",
+                "lightsail:DeleteInstance",
+                "lightsail:DetachStaticIp",
+                "lightsail:GetInstance",
+                "lightsail:GetOperation",
+                "lightsail:GetStaticIp",
+                "lightsail:ReleaseStaticIp"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+
+```
+
 ##### Login to the AWS Console as the Specialized DevOps User
 
 Bookmark Url
