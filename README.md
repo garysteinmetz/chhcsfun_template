@@ -227,6 +227,12 @@ should be kept secret so don't share this list with others._
   usage for the specialized account
   - `AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
   - `AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` - The name of the DynamoDB table
+  - `AWS_COGNITO_CLIENT_ID` - The client ID (like a username) to access Cognito
+  - `AWS_COGNITO_CLIENT_SECRET` - The client secret (like a password) to access Cognito
+  - `AWS_COGNITO_DOMAIN_NAME` - The base URL for your application's login capabilities
+  - `AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
+  - `AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
+  - `AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
 
@@ -304,6 +310,48 @@ will still need to grant separate access to each user.
   - Record the table name as the `AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` variable value
 
 ##### Create Cognito User Pool
+
+  - Go to https://aws.amazon.com and login as you would on normal Amazon
+    - The browser should go to https://console.aws.amazon.com/console/home
+  - Make sure you have selected the correct AWS region (like 'US East (N. Virginia) us-east-1')
+  - In the search box, enter 'Cognito' and select the 'Cognito' result
+  - Click the 'Manage User Pools' button
+  - Click the 'Create a user pool' button
+  - Enter '#DOMAIN_NAME#' for the name of the user pool
+  - Click the 'Review defaults' button
+  - Scroll to the bottom of the page and click the 'Create pool' button
+  - In the resulting page, record the 'Pool Id' value at the top
+  as the `AWS_COGNITO_USER_POOL_ID` variable value
+  - Click the 'App clients' link in the left column
+  - Click the 'Add an app client' button
+  - Enter '#DOMAIN_NAME#' in the 'App client name' field
+  - Scroll down to the bottom of the page and click the 'Create app client' button
+  - In the resulting page, click the 'Show Details' button
+  - Under the 'App client id' section, record the value
+  as the `AWS_COGNITO_CLIENT_ID` variable value
+  - Under the 'App client secret' section, record the value
+  as the `AWS_COGNITO_CLIENT_SECRET` variable value
+  - Click the 'App client settings' link on the left side
+  - In the 'Enabled Identity Providers' section, check the 'Select all' checkbox
+  - In the 'Callback URL(s)' text box, enter the following
+    - `http://localhost:8080/oauthTwoCallback, https://#DOMAIN_NAME#/oauthTwoCallback`
+  - Under the 'Allowed OAuth Flows' section, check the 'Authorization code grant' checkbox
+  - Check all checkboxes under the 'Allowed OAuth Scopes' section
+  - Click the 'Save changes' button
+  - Click the 'Domain name' link on the left side
+  - In the 'Domain prefix' text box, enter '#DOMAIN_NAME#' but replace any '.' (period)
+  with a '-' (hyphen)
+  - Click the 'Check availability' button to confirm that that login domain name is available
+  - Click the 'Save changes' button
+  - Record the full URL (including 'https://' prefix and '.com' suffix)
+  in the 'Amazon Cognito domain' section as the `AWS_COGNITO_DOMAIN_NAME` variable value
+
+Using the `AWS_COGNITO_DOMAIN_NAME` variable value, derive these variable values.
+
+  - `AWS_COGNITO_OAUTH2_AUTHORIZE_URL`
+    - `#AWS_COGNITO_DOMAIN_NAME#/oauth2/authorize?response_type=code&client_id=#AWS_COGNITO_CLIENT_ID#`
+  - `AWS_COGNITO_OAUTH2_TOKEN_URL`
+    - `#AWS_COGNITO_DOMAIN_NAME#/oauth2/token`
 
 #### Install `aws` Command-Line Tool
 
@@ -435,7 +483,7 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "s3:GetObject",
                 "s3:PutObject"
             ],
-            "Resource": "arn:aws:s3:::content.chhcsfun.com/*"
+            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#/*"
         },
         {
             "Sid": "OneAndHalf",
@@ -445,7 +493,7 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "s3:GetBucketPolicy",
                 "s3:PutBucketPolicy"
             ],
-            "Resource": "arn:aws:s3:::content.chhcsfun.com"
+            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#"
         },
         {
             "Sid": "Two",
@@ -456,7 +504,7 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "dynamodb:ListTagsOfResource",
                 "dynamodb:DescribeContinuousBackups"
             ],
-            "Resource": "arn:aws:dynamodb:us-east-1:<AWS_ACCOUNT_ID>:table/userAppData.chhcsfun.com"
+            "Resource": "arn:aws:dynamodb:#AWS_REGION#:#AWS_ACCOUNT_ID#:table/#AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
         },
         {
             "Sid": "Four",

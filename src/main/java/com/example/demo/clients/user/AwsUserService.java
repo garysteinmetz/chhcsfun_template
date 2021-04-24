@@ -17,8 +17,8 @@ public class AwsUserService implements UserService {
     //
     //private static final String SEPERATOR = "|";
     //
-    private static final String HASH_KEY = "author_id";
-    private static final String SORT_KEY = "user_app_id";
+    private static final String HASH_KEY = "app_id";
+    private static final String SORT_KEY = "user_id";
     private static final String APP_DATA_FIELD = "app_data";
     private static final String LAST_MODIFIED_FIELD = "last_modified";
 
