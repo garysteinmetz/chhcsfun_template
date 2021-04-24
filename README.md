@@ -226,6 +226,7 @@ should be kept secret so don't share this list with others._
   - `AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
   usage for the specialized account
   - `AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
+  - `AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` - The name of the DynamoDB table
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
 
@@ -289,6 +290,18 @@ will still need to grant separate access to each user.
 ```
 
 ##### Create DynamoDB Table
+
+  - Go to https://aws.amazon.com and login as you would on normal Amazon
+    - The browser should go to https://console.aws.amazon.com/console/home
+  - In the search box, enter 'DynamoDB' and select the 'DynamoDB' result
+  - Click the 'Create table' button
+  - Click the 'Tables' link in the left column
+  - Click the 'Create table' button
+  - In the 'Table name' field, enter 'userAppData.#DOMAIN_NAME#'
+  - In the 'Partition key' field, enter 'app_id'
+  - Check the 'Add sort key' checkbox and enter 'user_id' in field just below it
+  - Scroll down the page and click the 'Create' button
+  - Record the table name as the `AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` variable value
 
 ##### Create Cognito User Pool
 
