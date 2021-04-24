@@ -225,6 +225,7 @@ should be kept secret so don't share this list with others._
   usage for the specialized account
   - `AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
   usage for the specialized account
+  - `AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
 
@@ -232,6 +233,64 @@ Follow the instructions at
 https://github.com/garysteinmetz/technology_survey_study_materials/blob/master/lessons/bonus_i_have_used_the_online_authoring_tool_to_create_a_simple_game.md .
 
 ### Phase 2 - Local Server Integrated with AWS
+
+#### Create AWS Entities for Application
+
+##### Create S3 Bucket
+
+First, create the bucket.
+
+  - Go to https://aws.amazon.com and login as you would on normal Amazon
+    - The browser should go to https://console.aws.amazon.com/console/home
+  - In the search box, enter 'S3' and select the 'S3' result
+  - Click the 'Create bucket' button
+  - Under 'Bucket name' enter 'content.#DOMAIN_NAME#'
+  - Under the 'Block Public Access settings for this bucket' section,
+  uncheck the 'Block all public access' checkbox and ensure all sub-checkboxes
+  under it are unchecked too
+  - Check the 'I acknowledge ...' checkbox just under that section
+  - Scroll to the bottom of the page and click 'Create bucket' button
+  - Record the name of this bucket as the `AWS_S3_BUCKET_NAME_CONTENT` variable value
+
+Now, allow the possibility of general access to this bucket. Note that this AWS account
+will still need to grant separate access to each user.
+
+  - You should now be back on the main S3 page
+  ( https://s3.console.aws.amazon.com/s3/home )
+  - Scroll down the table and click the `#AWS_S3_BUCKET_NAME_CONTENT#` link under
+  the 'Name' column
+  - Click the 'Permissions' tab
+  - Scroll down to the 'Bucket policy' section and click the 'Edit' button
+  - In the text area under the 'Policy' section, enter the following then click
+  the 'Save changes' button
+    - Make sure to substitute `#AWS_S3_BUCKET_NAME_CONTENT#`
+
+```
+{
+    "Version": "2012-10-17",
+    "Id": "Policy1617405356323",
+    "Statement": [
+        {
+            "Sid": "Stmt1617405350836",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#/*"
+        },
+        {
+            "Sid": "Stmt1617405350836",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#"
+        }
+    ]
+}
+```
+
+##### Create DynamoDB Table
+
+##### Create Cognito User Pool
 
 #### Install `aws` Command-Line Tool
 
@@ -904,3 +963,14 @@ to the account. Doing this lowers the likelihood of the following unwanted outco
 
 // What Is This?
 // Create 'INSTALLATION.md' File
+
+Don't need to understand entire application, don't get intimidated
+Technologies change about every 7 years
+Could just throw files into the 'resources/static' directory
+  //
+Access permissions
+Instructions
+Alerts
+Update service to reboot
+Calling web services from Phaser
+Delete everything in the AWS account
