@@ -13,7 +13,7 @@ public class LocalUserService implements UserService {
     UserData userData;
     @PostConstruct
     public void init() throws JsonProcessingException {
-        System.out.println("ZZZ LocalUserData - " + localUserData);
+        //System.out.println("ZZZ LocalUserData - " + localUserData);
         ObjectMapper objectMapper = new ObjectMapper();
         userData = objectMapper.readValue(localUserData, UserData.class);
     }

@@ -41,7 +41,7 @@ public class DemoApplicationTests {
         Value input1 = context.eval("js", "123");
         Value function1 = context.eval("js", assembleMultiLine(JS_CODE));
         Value result1 = function1.execute(input1);
-        System.out.println("ZZZ result1 - " + result1);
+        //System.out.println("ZZZ result1 - " + result1);
         //
         //
         final String[] SIMPLIFY_JSON = new String[]{
@@ -51,7 +51,7 @@ public class DemoApplicationTests {
         };
         Value function2 = context.eval("js", assembleMultiLine(SIMPLIFY_JSON));
         Value result2 = function2.execute(result1);
-        System.out.println("ZZZ result2 - " + result2);
+        //System.out.println("ZZZ result2 - " + result2);
         //
         final String[] STRIP_STRINGS = new String[]{
                 "(function stripStrings(param, allowedStrings) {",
@@ -84,7 +84,7 @@ public class DemoApplicationTests {
         Value function3 = context.eval("js", assembleMultiLine(STRIP_STRINGS));
         Value array1 = context.eval("js", "['def']");
         Value result3 = function3.execute(result2, array1);
-        System.out.println("ZZZ result3 - " + result3);
+        //System.out.println("ZZZ result3 - " + result3);
     }
     private String assembleMultiLine(String... lines) {
         StringWriter outValue = new StringWriter();

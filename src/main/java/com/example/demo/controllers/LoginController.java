@@ -67,6 +67,8 @@ public class LoginController {
             @RequestParam(name="code", required=true) String code,
             @RequestParam(name="state", required=false, defaultValue="/") String redirectPath,
             HttpServletRequest request, HttpServletResponse httpResponse, HttpSession httpSession) {
+        //System.out.println("ZZZ Received OAuth2 Code - " + code);
+        //System.out.println("ZZZ   State - " + redirectPath);
         return iamService.processOauthTwoCallback(code, redirectPath, request, httpResponse, httpSession);
     }
     /*

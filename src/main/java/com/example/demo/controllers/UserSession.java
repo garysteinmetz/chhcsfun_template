@@ -20,7 +20,7 @@ public class UserSession implements Serializable {
         //
         try {
             oauthToken = convertReaderToUtfEightString(reader);
-            System.out.println("ZZZ oauthToken - " + oauthToken);
+            //System.out.println("ZZZ oauthToken - " + oauthToken);
         } catch (IOException ioe) {
             throw new IllegalStateException(ioe);
         }

@@ -63,8 +63,9 @@ public class AwsIamService implements IamService {
             sb.append(URLEncoder.encode(oauthTwoCallbackUrl.toString(), StandardCharsets.UTF_8));
             sb.append("&state=");
             sb.append(URLEncoder.encode(callbackUrl.toString(), StandardCharsets.UTF_8));
-            System.out.println("ZZZ LoginUrl - " + sb);
+            //System.out.println("ZZZ LoginUrl - " + sb);
             //
+            //System.out.println("ZZZ Going to URL - " + sb);
             return sb.toString();
         } catch (URISyntaxException use) {
             throw new IllegalStateException(use);
@@ -87,12 +88,14 @@ public class AwsIamService implements IamService {
             //
             //String requestUrl = ensureHttps(request.getRequestURL().toString());
             String requestUrl = request.getRequestURL().toString();
-            System.out.println("ZZZ request.getRequestURL().toString() - " + requestUrl);
+            //System.out.println("ZZZ request.getRequestURL().toString() - " + requestUrl);
             List<NameValuePair> form = new ArrayList<>();
             form.add(new BasicNameValuePair("grant_type", "authorization_code"));
             form.add(new BasicNameValuePair("redirect_uri", requestUrl));
             form.add(new BasicNameValuePair("code", code));
             UrlEncodedFormEntity entity = new UrlEncodedFormEntity(form, Consts.UTF_8);
+            //System.out.println("ZZZ Sending HTTP POST to " + awsCognitoOauth2TokenUrl
+            //    + " with code " + code + " which should then redirect to URL " + requestUrl);
             httpPost.setEntity(entity);
             //
             CloseableHttpResponse response = client.execute(httpPost);
@@ -105,10 +108,10 @@ public class AwsIamService implements IamService {
                 String username = UserSession.getSession(httpSession).get().getUsername();
                 String name = UserSession.getSession(httpSession).get().getName();
                 String email = UserSession.getSession(httpSession).get().getEmail();
-                System.out.println("ZZZ userId - " + userId);
-                System.out.println("ZZZ username - " + username);
-                System.out.println("ZZZ name - " + name);
-                System.out.println("ZZZ email - " + email);
+                //System.out.println("ZZZ userId - " + userId);
+                //System.out.println("ZZZ username - " + username);
+                //System.out.println("ZZZ name - " + name);
+                //System.out.println("ZZZ email - " + email);
                 //
                 //Cookie userDisplayNameCookie = new Cookie("userDisplayName", name);
                 //httpResponse.addCookie(userDisplayNameCookie);

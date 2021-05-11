@@ -21,39 +21,39 @@ public class CommonConfiguration {
     @Bean
     @ConditionalOnProperty(value = "local.cms.path")
     public CmsService localCmsService() {
-        System.out.println("ZZZ LOCAL CmsService");
+        //System.out.println("ZZZ LOCAL CmsService");
         return new LocalCmsService();
     }
     @Bean
     @ConditionalOnMissingBean(CmsService.class)
     public CmsService awsCmsService() {
-        System.out.println("ZZZ AWS CmsService");
+        //System.out.println("ZZZ AWS CmsService");
         return new AwsCmsService();
     }
     //
     @Bean
     @ConditionalOnProperty(value = "local.iam.user")
     public IamService localIamService() {
-        System.out.println("ZZZ LOCAL IamService");
+        //System.out.println("ZZZ LOCAL IamService");
         return new LocalIamService();
     }
     @Bean
     @ConditionalOnMissingBean(IamService.class)
     public IamService awsIamService() {
-        System.out.println("ZZZ AWS IamService");
+        //System.out.println("ZZZ AWS IamService");
         return new AwsIamService();
     }
     //
     @Bean
     @ConditionalOnProperty(value = "local.user.data")
     public UserService localUserService() {
-        System.out.println("ZZZ LOCAL UserService");
+        //System.out.println("ZZZ LOCAL UserService");
         return new LocalUserService();
     }
     @Bean
     @ConditionalOnMissingBean(UserService.class)
     public UserService awsUserService() {
-        System.out.println("ZZZ AWS UserService");
+        //System.out.println("ZZZ AWS UserService");
         return new AwsUserService();
     }
 }

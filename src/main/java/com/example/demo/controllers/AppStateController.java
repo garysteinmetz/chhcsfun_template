@@ -30,8 +30,8 @@ public class AppStateController {
     public ResponseEntity saveAppState(
             @PathVariable String appName, @RequestParam("appData") String data, HttpSession httpSession) {
         //
-        System.out.println("ZZZ Received - " + appName);
-        System.out.println("ZZZ Received - " + data);
+        //System.out.println("ZZZ Received - " + appName);
+        //System.out.println("ZZZ Received - " + data);
         Optional<UserSession> userSession = UserSession.getSession(httpSession);
         if (userSession.isPresent()) {
             userService.saveToUserAppDataTable(appName, userSession.get().getUsername(), data);
@@ -87,13 +87,13 @@ public class AppStateController {
         //appData = "{\"abc\": 123}";
         //
         Context context = Context.create();
-        System.out.println("ZZZ A");
+        //System.out.println("ZZZ A");
         //System.out.println("ZZZ AB - " + context.asValue(appData));
         //Value input1 = context.parse("js", appData);
         Value input1 = context.asValue(appData);//context.parse("js", appData);
-        System.out.println("ZZZ B");
-        System.out.println("ZZZ input1 - " + input1);
-        System.out.println("ZZZ jsCode = " + jsCode);
+        //System.out.println("ZZZ B");
+        //System.out.println("ZZZ input1 - " + input1);
+        //System.out.println("ZZZ jsCode = " + jsCode);
         Value function1 = context.eval("js", "(" + jsCode + ")");
         Value result1 = function1.execute(input1);
         //System.out.println("ZZZ result1 - " + result1);
@@ -106,11 +106,11 @@ public class AppStateController {
                 "})"
         };
         Value function2 = context.eval("js", assembleMultiLine(SIMPLIFY_JSON));
-        System.out.println("ZZZ result1 - " + result1);
+        //System.out.println("ZZZ result1 - " + result1);
         //System.out.println("ZZZ result1 - " + result1.);
         //System.out.println("ZZZ result1 - " + result1.asString());
         Value result2 = function2.execute(result1);
-        System.out.println("ZZZ result2 - " + result2);
+        //System.out.println("ZZZ result2 - " + result2);
         //
         final String[] STRIP_STRINGS = new String[]{
                 "(function stripStrings(param, allowedStrings) {",

@@ -22,14 +22,14 @@ public class GeneralController {
     @ResponseBody
     @RequestMapping(value="*", method=RequestMethod.GET)
     public ResponseEntity<InputStreamResource> general(HttpServletRequest request) {
-        System.out.println("ZZZ URL Path - " + request.getRequestURI());
-        System.out.println("ZZZ URL Context Path - " + request.getContextPath());
-        System.out.println("ZZZ URL Path Info - " + request.getPathInfo());
-        System.out.println("ZZZ URL Path Translated - " + request.getPathTranslated());
-        System.out.println("ZZZ URL Request URL - " + request.getRequestURL());
-        System.out.println("ZZZ URL Servlet Path - " + request.getServletPath());
-        System.out.println("ZZZ URL Request URI - " + request.getRequestURI());
-        System.out.println("ZZZ URL Path Within Handler - " + request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
+        //System.out.println("ZZZ URL Path - " + request.getRequestURI());
+        //System.out.println("ZZZ URL Context Path - " + request.getContextPath());
+        //System.out.println("ZZZ URL Path Info - " + request.getPathInfo());
+        //System.out.println("ZZZ URL Path Translated - " + request.getPathTranslated());
+        //System.out.println("ZZZ URL Request URL - " + request.getRequestURL());
+        //System.out.println("ZZZ URL Servlet Path - " + request.getServletPath());
+        //System.out.println("ZZZ URL Request URI - " + request.getRequestURI());
+        //System.out.println("ZZZ URL Path Within Handler - " + request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
         return a(request.getRequestURI());
     }
     /*
@@ -39,14 +39,14 @@ public class GeneralController {
     @ResponseBody
     @RequestMapping(value="/", method=RequestMethod.GET)
     public ResponseEntity<InputStreamResource> root(HttpServletRequest request) {
-        System.out.println("ZZZ Root URL Path - " + request.getRequestURI());
-        System.out.println("ZZZ Root URL Context Path - " + request.getContextPath());
-        System.out.println("ZZZ Root URL Path Info - " + request.getPathInfo());
-        System.out.println("ZZZ Root URL Path Translated - " + request.getPathTranslated());
-        System.out.println("ZZZ Root URL Request URL - " + request.getRequestURL());
-        System.out.println("ZZZ Root URL Servlet Path - " + request.getServletPath());
-        System.out.println("ZZZ Root URL Request URI - " + request.getRequestURI());
-        System.out.println("ZZZ Root URL Path Within Handler - " + request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
+        //System.out.println("ZZZ Root URL Path - " + request.getRequestURI());
+        //System.out.println("ZZZ Root URL Context Path - " + request.getContextPath());
+        //System.out.println("ZZZ Root URL Path Info - " + request.getPathInfo());
+        //System.out.println("ZZZ Root URL Path Translated - " + request.getPathTranslated());
+        //System.out.println("ZZZ Root URL Request URL - " + request.getRequestURL());
+        //System.out.println("ZZZ Root URL Servlet Path - " + request.getServletPath());
+        //System.out.println("ZZZ Root URL Request URI - " + request.getRequestURI());
+        //System.out.println("ZZZ Root URL Path Within Handler - " + request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
         return a("/index.html");
     }
     private ResponseEntity<InputStreamResource> a(String requestUri) {
