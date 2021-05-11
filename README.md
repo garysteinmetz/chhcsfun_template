@@ -233,6 +233,7 @@ should be kept secret so don't share this list with others._
   - `AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
   - `AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
   - `AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
+  - `AWS_DEVOPS_CONSOLE_URL` - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
 
@@ -496,13 +497,27 @@ To add the correct permissions to this specialized DevOps user, do the following
             "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#"
         },
         {
+            "Sid": "OneAndHalfAgain",
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
             "Sid": "Two",
             "Effect": "Allow",
             "Action": [
                 "dynamodb:DescribeTable",
                 "dynamodb:DescribeTimeToLive",
                 "dynamodb:ListTagsOfResource",
-                "dynamodb:DescribeContinuousBackups"
+                "dynamodb:DescribeContinuousBackups",
+                "dynamodb:GetItem",
+                "dynamodb:PutItem",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem",
+                "dynamodb:Query",
+                "dynamodb:GetRecords"
             ],
             "Resource": "arn:aws:dynamodb:#AWS_REGION#:#AWS_ACCOUNT_ID#:table/#AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
         },
