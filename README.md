@@ -120,6 +120,11 @@ run command `source ~/Desktop/initVars.sh` .
 
 #### Convenience Script for Windows
 
+## Run This Application Locally
+
+Confirm that you can run this application locally (without integration to AWS)
+by following the steps [here](docs/sample_app/coin_flip.md).
+
 ## Phases
 
 ### Phase 0 - Select an Unused Domain Name and Get Ready to Record Variable Values
