@@ -12,65 +12,8 @@ AWS has a vast portfolio of categories of services. Everything from renting comp
 storing data, identifying faces in pictures, crowdsourcing the talents of other people
 ('Mechnical Turk'), and so much more can be done with AWS.
 
-Here are the categories of services that will be used by this application. Note that
-if you decide to run the application locally and integrate with AWS, you should (in theory)
-be able to avoid being charged (as of April 2021). All estimated costs listed here are
-as of April 2021.
-
-  - `LightSail` - This is a lower-cost computing rental service meant to give you a dedicated
-  (Linux) machine to host the application server. This computer is assigned a 'dedicated'
-  (fixed) IP address which makes mapping it to a domain name (like 'chhcsfun.com')
-  real easy.
-    - When Needed - Only when hosting app server on AWS, not when running app server locally
-    - Estimated Cost - $3.50 per month
-  - `Route53` - This is used to claim a domain name (like 'chhcsfun.com') for your use and
-  map it to the 'dedicated' IP address of the LightSail machine which will allow it to
-  interact with web browsers when a URL containing the domain name is included
-  (like 'https://chhcsfun.com')
-    - When Needed - Only when hosting app server on AWS, not when running app server locally
-    - Estimated Cost - $12 per year to claim the domain name, $0.50 per month to map this
-    domain name to the 'dedicated' IP assigned to the LightSail machine
-  - `S3` - This is a cloud-based file system for storing the files that your web application
-  will send ('serve') to browsers. There are two advantages of using this service instead
-  of storing the files here - (A) updating these files is easy versus trying to update the
-  files running within LightSail and (B) these files can be versioned while also being
-  retained even after the LightSail server is destroyed (e.g. to save money).
-    - When Needed - Both when hosting app server on AWS or locally but integrated with AWS,
-    not used in local simulated ('mocked') mode
-    - Estimated Cost - Free
-  - `IAM` - This is a user-management service which (among other things) allows the root
-  user (the one paying the bills) create other users who (usually) have limited rights
-  (so they can't do too much damage), note that in this context 'users' means those
-  using AWS (not the web application)
-    - When Needed - Both when hosting app server on AWS or locally but integrated with AWS,
-    not used in local simulated ('mocked') mode
-    - Estimated Cost - Free
-  - `Cognito` - This allows users of the web application (not AWS, which is what IAM is for)
-  to create user accounts with simple information (like the user's display name) to be assigned
-  to them, integration with third-parties (like GMail, using something called 'OAuth2')
-  is possible (which allows a user to login to the application without having to create
-  another username/password combination)
-    - When Needed - Both when hosting app server on AWS or locally but integrated with AWS,
-    not used in local simulated ('mocked') mode
-    - Estimated Cost - Free
-  - `DynamoDB` - This is a ('NoSQL') database service which can be used to store a user's data
-  for a specific application
-    - When Needed - Both when hosting app server on AWS or locally but integrated with AWS,
-    not used in local simulated ('mocked') mode
-    - Estimated Cost - Free
-
-These specific (free) tools will be used to complete the installation.
-
-  - `aws` - This is the AWS command-line tool that allows your local machine (and the LightSail
-  server too) to interact with AWS, note that programs which run AWS commands will rely on the
-  configurations made by this program to access AWS (which makes this tool critical for AWS
-  integration)
-    - When Needed - Both when hosting app server on AWS or locally but integrated with AWS,
-    not used in local simulated ('mocked') mode
-  - `terraform` - Terraform is a popular (arguably vital) program for automating the
-  construction and (importantly) destruction of entities within a cloud service (like AWS),
-  this is often a cornerstone tool in the `Infrastructure-As-Code` methodology
-    - When Needed - Only when hosting app server on AWS, not when running app server locally
+[Click here to find out more information about the services and tools
+that will be used.](docs/goals/services_and_tools.md)
 
 ## Billing
 
@@ -83,38 +26,99 @@ To view the accumulated charges for this month go to
 https://console.aws.amazon.com/billing/home#/ . On that page, click the 'Bills' link
 to view the bills for previous months.
 
-### Create Daily and Monthly Budgets to Send Email Alerts If Too Much Money Is Being Spent
+[Click here to find out how to create budget alerts to help detect
+unexpected charges.](docs/billing/create_budgets.md)
 
-AWS supports the creation of budgets which can send alerts when more than a certain amount
-of money is being charged over a period of time. Create two reports - daily and monthly -
-to catch surprise expenditures early.
+## Variable Values
 
-These two reports are recommended because the registration or reregistration of a domain
-name could cause a spike both in daily and monthly expenses that just lasts a day.
-Having these two reports should allow both detection of a one-time spike in costs as
-well as a higher-than-normal accumulation of expenses over a longer period (i.e. month).
+### Get Ready to Record Variable Values
 
-Follow these instructions for each of the (2) reports - 'Daily' and 'Monthly'.
+There are several values listed in these instructions which will only be known by you.
+These values cannot be determined ahead of time. As these values come up, record them
+in a common table that you can reference later.
 
-  - Go to https://console.aws.amazon.com/billing/home
-  - Click the 'Budgets' link in the left column
-  - Click the 'Create a budget' button on the right
-  - Keep the 'Cost budget' radio button selected then click the 'Set your budget' button
-  - Enter a value in the 'Name' field
-    - Daily - CHHCS Fun App Daily Budget
-    - Monthly - CHHCS Fun App Monthly Budget
-  - Select a value in the 'Period' dropdown box
-    - Daily - Daily
-    - Monthly - Monthly
-  - Enter a value in the 'Budgeted amount' field (these are example recommended values)
-    - Daily - 15
-    - Monthly - 20
-  - Click the 'Configure thresholds' button located in the bottom right
-  - In the 'Alert threshold' text box, enter 100
-  - In the 'Email recipients' text area, enter a comma-separated list of the email
-  addresses that should receive an alert
-  - Click the 'Confirm budget' button in the lower right
-  - Review your settings then click the 'Create' button in the lower right
+### Representation of Variable Values
+
+When these values come up for you to enter, they will appear as their variable name
+and surrounded by the `#` character. So if the variable name `TF_VAR_AWS_DOMAIN_NAME`
+has a value of `chhcsfun.com`, then when you're asked to enter a statement
+like the following.
+
+```
+export TF_VAR_DOMAIN_NAME="#TF_VAR_AWS_DOMAIN_NAME#"
+```
+
+Enter the following instead.
+
+```
+export TF_VAR_DOMAIN_NAME="chhcsfun.com"
+```
+
+### List of Variable Values
+
+Write down (either (preferrably) electronically or on paper) a table consisting of two columns.
+The left column should be filled with the variable names listed below and in the right
+column write the value of that variable as you discover it. _Note that some of these values
+should be kept secret so don't share this list with others._
+
+  - `TF_VAR_AWS_DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
+  - `TF_VAR_AWS_ACCOUNT_ID` - This is the unique number assigned to your AWS account
+  - `TF_VAR_AWS_REGION` - This should have a value of `us-east-1`
+  - `TF_VAR_AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
+  - `TF_VAR_AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
+  - `TF_VAR_AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
+  - `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` - This is the equivalent of a username for `aws` tool
+  usage for the specialized account
+  - `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
+  usage for the specialized account
+  - `TF_VAR_AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
+  - `TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` - The name of the DynamoDB table
+  - `TF_VAR_AWS_COGNITO_CLIENT_ID` - The client ID (like a username) to access Cognito
+  - `TF_VAR_AWS_COGNITO_CLIENT_SECRET` - The client secret (like a password) to access Cognito
+  - `TF_VAR_AWS_COGNITO_DOMAIN_NAME` - The base URL for your application's login capabilities
+  - `TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
+  - `TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
+  - `TF_VAR_AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
+  - `TF_VAR_AWS_DEVOPS_CONSOLE_URL` - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html
+
+#### Convenience Script for MacOS
+
+On your desktop, create a text file named `initVars.sh` which can be used to first
+record these variable values. Later, they'll be used to easily initialize the local setup
+of the application and then deploy it to AWS. Enter the following content into the file.
+
+```
+export TF_VAR_AWS_DOMAIN_NAME=""
+export TF_VAR_AWS_ACCOUNT_ID=""
+export TF_VAR_AWS_REGION=""
+export TF_VAR_AWS_DEVOPS_USERNAME=""
+export TF_VAR_AWS_DEVOPS_PASSWORD=""
+export TF_VAR_AWS_CUSTOM_LOGIN_URL=""
+export TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID=""
+export TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY=""
+export TF_VAR_AWS_S3_BUCKET_NAME_CONTENT=""
+export TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=""
+export TF_VAR_AWS_COGNITO_CLIENT_ID=""
+export TF_VAR_AWS_COGNITO_CLIENT_SECRET=""
+export TF_VAR_AWS_COGNITO_DOMAIN_NAME=""
+export TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=""
+export TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=""
+export TF_VAR_AWS_COGNITO_USER_POOL_ID=""
+export TF_VAR_AWS_DEVOPS_CONSOLE_URL=""
+```
+
+As you derive these values following the rest of the steps in these instructions,
+enter each one in its corresponding line below between the `"` pair. So for the
+`export TF_VAR_AWS_DOMAIN_NAME=""` line below, if 'chhcsfun.com' is used as the value
+then the line should be updated to `export TF_VAR_AWS_DOMAIN_NAME="chhcsfun.com"` .
+
+Make sure you can execute this script to load these (environment) variable values
+on the command line by running command `chmod 777 ~/Desktop/initVars.sh` .
+
+Whenever you need to load these (environment) variable values from the command line,
+run command `source ~/Desktop/initVars.sh` .
+
+#### Convenience Script for Windows
 
 ## Phases
 
@@ -186,54 +190,6 @@ For this setup, use the `us-east-1` region. Ensure this setting by doing the fol
   - Just right of your name in the top right, click the dropdown and select the
   `US East (N. Virginia) us-east-1` value
 
-#### Get Ready to Record Variable Values
-
-There are several values listed in these instructions which will only be known by you.
-These values cannot be determined ahead of time. As these values come up, record them
-in a common table that you can reference later.
-
-##### Representation of Variable Values
-
-When these values come up for you to enter, they will appear as their variable name
-and surrounded by the `#` character. So if the variable name `DOMAIN_NAME` has a value
-of `chhcsfun.com`, then when you're asked to enter a statement like the following.
-
-```
-export TF_VAR_DOMAIN_NAME="#DOMAIN_NAME#"
-```
-
-Enter the following instead.
-
-```
-export TF_VAR_DOMAIN_NAME="chhcsfun.com"
-```
-
-##### List of Variable Values
-
-Write down (either (preferrably) electronically or on paper) a table consisting of two columns.
-The left column should be filled with the variable names listed below and in the right
-column write the value of that variable as you discover it. _Note that some of these values
-should be kept secret so don't share this list with others._
-
-  - `DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
-  - `AWS_ACCOUNT_ID` - This is the unique number assigned to your AWS account
-  - `AWS_REGION` - This should have a value of `us-east-1`
-  - `AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
-  - `AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
-  - `AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
-  - `AWS_DEVOPS_ACCESS_KEY_ID` - This is the equivalent of a username for `aws` tool
-  usage for the specialized account
-  - `AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
-  usage for the specialized account
-  - `AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
-  - `AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` - The name of the DynamoDB table
-  - `AWS_COGNITO_CLIENT_ID` - The client ID (like a username) to access Cognito
-  - `AWS_COGNITO_CLIENT_SECRET` - The client secret (like a password) to access Cognito
-  - `AWS_COGNITO_DOMAIN_NAME` - The base URL for your application's login capabilities
-  - `AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
-  - `AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
-  - `AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
-  - `AWS_DEVOPS_CONSOLE_URL` - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
 
@@ -571,11 +527,20 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "lightsail:ReleaseStaticIp"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "Seven",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-identity:ListIdentityPools"
+            ],
+            "Resource": "*"
         }
     ]
 }
-
 ```
+
+Cognito Reference - https://docs.aws.amazon.com/cognito/latest/developerguide/resource-permissions.html
 
 ##### Login to the AWS Console as the Specialized DevOps User
 

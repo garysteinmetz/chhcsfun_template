@@ -1,0 +1,196 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        var game = 'coinflipgame';
+        var allPlayerData = [];
+        var user;
+        var topScore = -1;
+        var lastGameScore = -1;
+        var score = 0;
+        function flipCoin() {
+            var flipResult = getRandomWholeNumberUnder(2);
+            if (flipResult === 1) {
+                $("#coin_flip").attr("src", "heads.png");
+                score++;
+            } else {
+                $("#coin_flip").attr("src", "tails.png");
+                lastGameScore = score;
+                score = 0;
+                if (lastGameScore > topScore) {
+                    topScore = lastGameScore;
+                    if (user && user.isLoggedIn) {
+                        sendData(game, {score: topScore}, null);
+                    }
+                }
+            }
+            updateHighScores();
+        }
+        function updateHighScores() {
+            var highScoresEle = $("#high_scores");
+            $(highScoresEle).empty();
+            //
+            if (lastGameScore >= 0) {
+                var span1 = document.createElement( "span" );
+                $(highScoresEle).append(span1);
+                $(span1).text("The score of your last game was " + lastGameScore);
+                var br1 = document.createElement( "br" );
+                $(highScoresEle).append(br1);
+            }
+            if (topScore >= 0) {
+                var span2 = document.createElement( "span" );
+                $(highScoresEle).append(span2);
+                $(span2).text("Your best-ever score is " + topScore);
+                var br2 = document.createElement( "br" );
+                $(highScoresEle).append(br2);
+            }
+            var span3 = document.createElement( "span" );
+            $(highScoresEle).append(span3);
+            $(span3).text("The score of your current game is " + score);
+            var br3 = document.createElement( "br" );
+            $(highScoresEle).append(br3);
+        }
+        //
+        //
+        //
+        function isLoggedIn() {
+        }
+        function getUserInfo(callback) {
+            $.get(
+                {
+                    url: "/userInfo",
+                    success: function(data, status) {
+                        if (callback) {
+                            callback(data, status);
+                        }
+                    }
+                }
+            );
+        }
+        function generateLoginDomStructure(targetId) {
+            $.get(
+                {
+                    url: "/userInfo",
+                    success: function(data, status) {
+                        generateLoginDomStructureImpl(targetId, data);
+                    }
+                }
+            );
+        }
+        function generateLoginDomStructureImpl(targetId, userInfo) {
+            var baseDiv = $("#" + targetId)
+            var div = document.createElement( "div" );
+            $(baseDiv).append(div);
+            //
+            if (userInfo.isLoggedIn) {
+                $(div).text("Hello " + userInfo.displayName + "!");
+            } else {
+                var href = window.location.origin + "/login?url=" + encodeURIComponent(document.URL);
+                var a = document.createElement( "a" );
+                $(div).append(a);
+                $(a).attr("href", href);
+                $(a).text("Login Now");
+            }
+        }
+        function getCookie(name) {
+            var outValue = '';
+            var re = new RegExp('[; ]' + name + '=([^\\s;]*)');
+            var sMatch = (' ' + document.cookie).match(re);
+            if (sMatch) {
+                outValue = unescape(sMatch[1]);
+            }
+            return outValue;
+        }
+        function sendData(appName, appData, callback) {
+            $.post(
+                {
+                    url: "/appState/" + appName,
+                    data: {appData: JSON.stringify(appData)},
+                    success: function(data, status) {
+                        if (callback) {
+                            callback(data, status);
+                        }
+                    }
+                }
+            );
+        }
+        function getData(appName, callback) {
+            $.get(
+                {
+                    url: "/appState/" + appName,
+                    success: function(data, status) {
+                        if (callback) {
+                            callback(data, status);
+                        }
+                    }
+                }
+            );
+        }
+        function getRandomWholeNumberUnder(range) {
+            return Math.floor(Math.random()*range);
+        }
+        function randomizeArray(input) {
+            var copyOfInput = [];
+            for (var i = 0; i < input.length; i++) {
+                copyOfInput.push(input[i]);
+            }
+            var output = [];
+            for (var i = 0; i < input.length; i++) {
+                var nextIndex = getRandomWholeNumberUnder(copyOfInput.length);
+                output.push(copyOfInput[nextIndex]);
+                copyOfInput.splice(nextIndex, 1);
+            }
+            return output;
+        }
+        function getLoginInformation() {
+        }
+    </script>
+    <script>
+          //
+            $(document).ready(
+                function() {
+                    getUserInfo(
+                        function(data, status) {
+                            generateLoginDomStructureImpl("user_pane", data);
+                            if (data.isLoggedIn) {
+                                user = data;
+                                getData(
+                                    game,
+                                    function(data, status) {
+                                        if (data.isPresent) {
+                                            var appData = JSON.parse(data.appData);
+                                            if (appData.score) {
+                                                topScore = appData.score;
+                                            }
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    );
+                }
+            );
+          //
+      </script>
+</head>
+<body>
+<hr />
+<div style="align: center">
+    <h1>Coin Flip Game</h1>
+    <div style="align: center">
+        Try to get as many consecutive 'heads' flips as you can!
+    </div>
+    <hr />
+</div>
+<div id="user_pane"></div>
+<div id="high_scores" style="align: center">
+</div>
+<div>
+    <hr />
+    <input type="button" onclick="flipCoin()" value="Flip Coin!" />
+    <br />
+    <img id="coin_flip" src="" />
+    <br />
+</div>
+</body>
+</html>
