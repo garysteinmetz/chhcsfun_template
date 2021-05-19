@@ -1,5 +1,7 @@
 # Create Daily and Monthly Budgets to Send Email Alerts If Too Much Money Is Being Spent
 
+[Click here to go back to the main page.](../../README.md)
+
 AWS supports the creation of budgets which can send alerts when more than a certain amount
 of money is being charged over a period of time. Create two reports - daily and monthly -
 to catch surprise expenditures early.
@@ -34,3 +36,5 @@ Follow these instructions for each of the (2) reports - 'Daily' and 'Monthly'.
   addresses that should receive an alert
   - Click the 'Confirm budget' button in the lower right
   - Review your settings then click the 'Create' button in the lower right
+
+[Click here to go back to the main page.](../../README.md)
