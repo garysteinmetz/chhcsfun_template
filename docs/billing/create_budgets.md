@@ -12,6 +12,10 @@ well as a higher-than-normal accumulation of expenses over a longer period (i.e.
 Follow these instructions for each of the (2) reports - 'Daily' and 'Monthly'.
 
   - Go to https://console.aws.amazon.com/billing/home
+  - Leave the 'Root user' radio button selected, enter email address of the `Root User`
+  under 'Root user email address', then click the 'Next' button
+  - If prompted, enter the correct CAPTCHA (hard-to-read letters) value and continue
+  - Enter the password for the `Root User` then click the 'Sign in' button
   - Click the 'Budgets' link in the left column
   - Click the 'Create a budget' button on the right
   - Keep the 'Cost budget' radio button selected then click the 'Set your budget' button

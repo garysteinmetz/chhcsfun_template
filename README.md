@@ -15,6 +15,33 @@ storing data, identifying faces in pictures, crowdsourcing the talents of other 
 [Click here to find out more information about the services and tools
 that will be used.](docs/goals/services_and_tools.md)
 
+## Run This Application Locally Without AWS Integration
+
+Confirm that you can run this application locally (without integration to AWS)
+by following the steps [here](docs/sample_app/coin_flip.md).  This is the 'coin flip' game
+and environment variables will be set later in these instructions so that this game
+actually integrates with AWS.
+
+## User Types
+
+While it may be just one actual person (you) that installs this application,
+these instructions require two AWS users to complete.
+
+  - `Root User` - This is the user whose login (username/password) you use to order
+  things (like books) on regular `amazon.com` . This user can also login and do _anything_
+  on AWS (`aws.amazon.com`). Because this user has _too much power_ and it's quite possible
+  that the person paying the AWS costs to use this application (e.g. parent) is different
+  from the person installing and maintaining this application (e.g. child), it's best
+  that this user create another user who is has just enough rights (and no more)
+  to install and maintain this application.
+  - `DevOps User` - This is the user who can't login to regular `amazon.com` but has just
+  enough privileges to install and maintain this application.
+
+In these instructions, the Root User will be creating the DevOps User along with the AWS
+structures (like Cognito User Group, DynamoDB table, Route53 zone, S3 bucket). The DevOps User
+will be using these AWS structures and create the LightSail instance to run this application.
+The DevOps User will also have the ability to destroy and to recreate the LightSail instance.
+
 ## Billing
 
 This setup involves using AWS resources, the usage of some of which
@@ -61,9 +88,9 @@ The left column should be filled with the variable names listed below and in the
 column write the value of that variable as you discover it. _Note that some of these values
 should be kept secret so don't share this list with others._
 
-  - `TF_VAR_AWS_DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
   - `TF_VAR_AWS_ACCOUNT_ID` - This is the unique number assigned to your AWS account
   - `TF_VAR_AWS_REGION` - This should have a value of `us-east-1`
+  - `TF_VAR_AWS_DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
   - `TF_VAR_AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
   - `TF_VAR_AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
   - `TF_VAR_AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
@@ -88,9 +115,9 @@ record these variable values. Later, they'll be used to easily initialize the lo
 of the application and then deploy it to AWS. Enter the following content into the file.
 
 ```
-export TF_VAR_AWS_DOMAIN_NAME=""
 export TF_VAR_AWS_ACCOUNT_ID=""
 export TF_VAR_AWS_REGION=""
+export TF_VAR_AWS_DOMAIN_NAME=""
 export TF_VAR_AWS_DEVOPS_USERNAME=""
 export TF_VAR_AWS_DEVOPS_PASSWORD=""
 export TF_VAR_AWS_CUSTOM_LOGIN_URL=""
@@ -120,18 +147,42 @@ run command `source ~/Desktop/initVars.sh` .
 
 #### Convenience Script for Windows
 
-## Run This Application Locally
 
-Confirm that you can run this application locally (without integration to AWS)
-by following the steps [here](docs/sample_app/coin_flip.md).
 
-## Phases
+## For `Root User`, Record the AWS Account ID and Set the Default Region
+
+  - Go to https://aws.amazon.com and login as the `Root User`
+  - Click your name in the top left and record the number next to 'My Account'
+  as the `TF_VAR_AWS_ACCOUNT_ID` variable value
+
+### Always Use the `us-east-1` AWS Region
+
+AWS hosts its services all around the world in well-defined regions. It's important
+to use the same region when you're creating the AWS components for an application.
+(Note that some components, like S3 'buckets' and IAM users are 'global' in that they
+aren't assigned to specific regions. They are region-less.)
+
+This setup will assume that you are using the `us-east-1` region, but you can select
+another region. _Make sure to use the same region throughout this installation._
+Ensure this setting by doing the following.
+
+  - Go to any AWS page like https://console.aws.amazon.com/console/home
+  - Just right of your name in the top right, click the dropdown and select the
+  `US East (N. Virginia) us-east-1` value
+  - Record this region's code (`us-east-1`) as the `TF_VAR_AWS_REGION` variable value
+
+### Confirm Variable Values
+
+Confirm that the following variable values have been recorded in this section.
+
+  - `TF_VAR_AWS_ACCOUNT_ID`
+  - `TF_VAR_AWS_REGION`
 
 ### Phase 0 - Select an Unused Domain Name and Get Ready to Record Variable Values
 
 #### Select an Unused Domain Name
 
-Think of the domain name (like 'chhcsfun.com' for your web site). You don't need to actually register
+Think of the domain name (like 'chhcsfun.com') for your web site. You don't need to actually register
 (and pay for) a domain name right now. You will only need to register a domain name once you've
 decided to host your web application on a LightSail server. _A domain name isn't needed to run
 the web application locally but the AWS entities (like the DynamoDB table and Cognito entities)
@@ -172,28 +223,6 @@ name is available without actually reserving it).
 Record the domain name as it will be referenced as `#DOMAIN_NAME#` subsequently in these
 instructions. This variable is listed as `DOMAIN_NAME` in the `List of Variable Values`
 section below.
-
-##### Record the AWS Account ID
-
-In the same browser, do the following.
-
-  - Click your name in the top left and record the number next to 'My Account'
-
-It will be referenced as `#AWS_ACCOUNT_ID#` subsequently in these instructions.
-This variable is listed as `AWS_ACCOUNT_ID` in the `List of Variable Values` section below.
-
-##### Always Use the `us-east-1` AWS Region
-
-AWS hosts its services all around the world in well-defined regions. It's important
-to use the same region when you're creating the AWS components for an application.
-(Note that some components, like S3 'buckets' and IAM users are 'global' in that they
-aren't assigned to specific regions. They are region-less.)
-
-For this setup, use the `us-east-1` region. Ensure this setting by doing the following.
-
-  - Go to any AWS page like https://console.aws.amazon.com/console/home
-  - Just right of your name in the top right, click the dropdown and select the
-  `US East (N. Virginia) us-east-1` value
 
 
 ### Phase 1 - Local Server with Simulated Calls to AWS
@@ -1020,3 +1049,24 @@ Alerts
 Update service to reboot
 Calling web services from Phaser
 Delete everything in the AWS account
+
+//
+
+        {
+            "Sid": "H",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-idp:ListUserPools"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "I",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-idp:Admin*",
+                "cognito-idp:List*"
+            ],
+            "Resource": "arn:aws:cognito-idp:<REGION>:<ACCOUNT_ID>:userpool/<POOL_ID>"
+        }
+//
