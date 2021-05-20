@@ -91,13 +91,6 @@ should be kept secret so don't share this list with others._
   - `TF_VAR_AWS_ACCOUNT_ID` - This is the unique number assigned to your AWS account
   - `TF_VAR_AWS_REGION` - This should have a value of `us-east-1`
   - `TF_VAR_AWS_DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
-  - `TF_VAR_AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
-  - `TF_VAR_AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
-  - `TF_VAR_AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
-  - `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` - This is the equivalent of a username for `aws` tool
-  usage for the specialized account
-  - `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
-  usage for the specialized account
   - `TF_VAR_AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
   - `TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` - The name of the DynamoDB table
   - `TF_VAR_AWS_COGNITO_CLIENT_ID` - The client ID (like a username) to access Cognito
@@ -106,6 +99,13 @@ should be kept secret so don't share this list with others._
   - `TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
   - `TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
   - `TF_VAR_AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
+  - `TF_VAR_AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
+  - `TF_VAR_AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
+  - `TF_VAR_AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
+  - `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` - This is the equivalent of a username for `aws` tool
+  usage for the specialized account
+  - `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
+  usage for the specialized account
   - `TF_VAR_AWS_DEVOPS_CONSOLE_URL` - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html
 
 #### Convenience Script for MacOS
@@ -118,11 +118,6 @@ of the application and then deploy it to AWS. Enter the following content into t
 export TF_VAR_AWS_ACCOUNT_ID=""
 export TF_VAR_AWS_REGION=""
 export TF_VAR_AWS_DOMAIN_NAME=""
-export TF_VAR_AWS_DEVOPS_USERNAME=""
-export TF_VAR_AWS_DEVOPS_PASSWORD=""
-export TF_VAR_AWS_CUSTOM_LOGIN_URL=""
-export TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID=""
-export TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY=""
 export TF_VAR_AWS_S3_BUCKET_NAME_CONTENT=""
 export TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=""
 export TF_VAR_AWS_COGNITO_CLIENT_ID=""
@@ -131,6 +126,11 @@ export TF_VAR_AWS_COGNITO_DOMAIN_NAME=""
 export TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=""
 export TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=""
 export TF_VAR_AWS_COGNITO_USER_POOL_ID=""
+export TF_VAR_AWS_DEVOPS_USERNAME=""
+export TF_VAR_AWS_DEVOPS_PASSWORD=""
+export TF_VAR_AWS_CUSTOM_LOGIN_URL=""
+export TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID=""
+export TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY=""
 export TF_VAR_AWS_DEVOPS_CONSOLE_URL=""
 ```
 
@@ -188,119 +188,40 @@ Confirm that the following variable values have been recorded in this section.
 
   - `TF_VAR_AWS_DOMAIN_NAME`
 
-### Phase 2 - Local Server Integrated with AWS
+## Create AWS Entity - Create S3 Bucket
 
-#### Create AWS Entities for Application
+[Click here to find out how to create an S3 bucket.](docs/aws/create_s3_bucket.md)
 
-##### Create S3 Bucket
+### Confirm Variable Values
 
-First, create the bucket.
+Confirm that the following variable values have been recorded in this section.
 
-  - Go to https://aws.amazon.com and login as the `Root User`
-    - The browser should go to https://console.aws.amazon.com/console/home
-  - In the search box, enter 'S3' and select the 'S3' result
-  - Click the 'Create bucket' button
-  - Under 'Bucket name' enter 'content.#DOMAIN_NAME#'
-  - Under the 'Block Public Access settings for this bucket' section,
-  uncheck the 'Block all public access' checkbox and ensure all sub-checkboxes
-  under it are unchecked too
-  - Check the 'I acknowledge ...' checkbox just under that section
-  - Scroll to the bottom of the page and click 'Create bucket' button
-  - Record the name of this bucket as the `AWS_S3_BUCKET_NAME_CONTENT` variable value
+  - `TF_VAR_AWS_S3_BUCKET_NAME_CONTENT`
 
-Now, allow the possibility of general access to this bucket. Note that this AWS account
-will still need to grant separate access to each user.
+## Create AWS Entity - Create DynamoDB Table
 
-  - You should now be back on the main S3 page
-  ( https://s3.console.aws.amazon.com/s3/home )
-  - Scroll down the table and click the `#AWS_S3_BUCKET_NAME_CONTENT#` link under
-  the 'Name' column
-  - Click the 'Permissions' tab
-  - Scroll down to the 'Bucket policy' section and click the 'Edit' button
-  - In the text area under the 'Policy' section, enter the following then click
-  the 'Save changes' button
-    - Make sure to substitute `#AWS_S3_BUCKET_NAME_CONTENT#`
+[Click here to find out how to create a DynamoDB table.](docs/aws/create_dynamodb_table.md)
 
-```
-{
-    "Version": "2012-10-17",
-    "Id": "Policy1617405356323",
-    "Statement": [
-        {
-            "Sid": "Stmt1617405350836",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:*",
-            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#/*"
-        },
-        {
-            "Sid": "Stmt1617405350836",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": "s3:*",
-            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#"
-        }
-    ]
-}
-```
+### Confirm Variable Values
 
-##### Create DynamoDB Table
+Confirm that the following variable values have been recorded in this section.
 
-  - Go to https://aws.amazon.com and login as you would on normal Amazon
-    - The browser should go to https://console.aws.amazon.com/console/home
-  - In the search box, enter 'DynamoDB' and select the 'DynamoDB' result
-  - Click the 'Create table' button
-  - Click the 'Tables' link in the left column
-  - Click the 'Create table' button
-  - In the 'Table name' field, enter 'userAppData.#DOMAIN_NAME#'
-  - In the 'Partition key' field, enter 'app_id'
-  - Check the 'Add sort key' checkbox and enter 'user_id' in field just below it
-  - Scroll down the page and click the 'Create' button
-  - Record the table name as the `AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` variable value
+  - `TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA`
 
-##### Create Cognito User Pool
+## Create AWS Entity - Create Cognito User Pool
 
-  - Go to https://aws.amazon.com and login as you would on normal Amazon
-    - The browser should go to https://console.aws.amazon.com/console/home
-  - Make sure you have selected the correct AWS region (like 'US East (N. Virginia) us-east-1')
-  - In the search box, enter 'Cognito' and select the 'Cognito' result
-  - Click the 'Manage User Pools' button
-  - Click the 'Create a user pool' button
-  - Enter '#DOMAIN_NAME#' for the name of the user pool
-  - Click the 'Review defaults' button
-  - Scroll to the bottom of the page and click the 'Create pool' button
-  - In the resulting page, record the 'Pool Id' value at the top
-  as the `AWS_COGNITO_USER_POOL_ID` variable value
-  - Click the 'App clients' link in the left column
-  - Click the 'Add an app client' button
-  - Enter '#DOMAIN_NAME#' in the 'App client name' field
-  - Scroll down to the bottom of the page and click the 'Create app client' button
-  - In the resulting page, click the 'Show Details' button
-  - Under the 'App client id' section, record the value
-  as the `AWS_COGNITO_CLIENT_ID` variable value
-  - Under the 'App client secret' section, record the value
-  as the `AWS_COGNITO_CLIENT_SECRET` variable value
-  - Click the 'App client settings' link on the left side
-  - In the 'Enabled Identity Providers' section, check the 'Select all' checkbox
-  - In the 'Callback URL(s)' text box, enter the following
-    - `http://localhost:8080/oauthTwoCallback, https://#DOMAIN_NAME#/oauthTwoCallback`
-  - Under the 'Allowed OAuth Flows' section, check the 'Authorization code grant' checkbox
-  - Check all checkboxes under the 'Allowed OAuth Scopes' section
-  - Click the 'Save changes' button
-  - Click the 'Domain name' link on the left side
-  - In the 'Domain prefix' text box, enter '#DOMAIN_NAME#' but replace any '.' (period)
-  with a '-' (hyphen)
-  - Click the 'Check availability' button to confirm that that login domain name is available
-  - Click the 'Save changes' button
-  - Record the full URL (including 'https://' prefix and '.com' suffix)
-  in the 'Amazon Cognito domain' section as the `AWS_COGNITO_DOMAIN_NAME` variable value
+[Click here to find out how to create a Cognito user pool.](docs/aws/create_cognito_user_pool.md)
 
-Using the `AWS_COGNITO_DOMAIN_NAME` variable value, derive these variable values.
+### Confirm Variable Values
 
-  - `AWS_COGNITO_OAUTH2_AUTHORIZE_URL`
-    - `#AWS_COGNITO_DOMAIN_NAME#/oauth2/authorize?response_type=code&client_id=#AWS_COGNITO_CLIENT_ID#`
-  - `AWS_COGNITO_OAUTH2_TOKEN_URL`
-    - `#AWS_COGNITO_DOMAIN_NAME#/oauth2/token`
+Confirm that the following variable values have been recorded in this section.
+
+  - `TF_VAR_AWS_COGNITO_USER_POOL_ID`
+  - `TF_VAR_AWS_COGNITO_CLIENT_ID`
+  - `TF_VAR_AWS_COGNITO_CLIENT_SECRET`
+  - `TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL`
+  - `TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL`
+  - `TF_VAR_AWS_COGNITO_DOMAIN_NAME`
 
 #### Install `aws` Command-Line Tool
 
