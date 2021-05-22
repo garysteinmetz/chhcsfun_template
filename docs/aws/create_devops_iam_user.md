@@ -2,12 +2,28 @@
 
 [Click here to go back to the main page.](../../README.md)
 
-As mentioned, you should not use the same ('root') user who pays the bills as the user
+As mentioned, you should not use the same user (`Root User`) who pays the bills as the user
 who installs and maintains the application.
 
-Follow these steps to create this other (specialized 'DevOps') user.
+Follow these steps to create this other specialized user (`DevOps User`).
 
-##### Create the Specialized DevOps User Which Will Be Used to Install and Maintain the App
+## Record URL of Login Page for IAM Users (Like the `DevOps User`)
+
+Users created by the `Root User` _cannot_ login on the general AWS login page
+(https://aws.amazon.com/). Instead, these users must login to a special login page
+in order to access the AWS console.
+
+The URL of that login page is as follows. Record it as the `TF_VAR_AWS_DEVOPS_CONSOLE_URL`
+variable value.
+
+```
+https://#TF_VAR_AWS_ACCOUNT_ID#.signin.aws.amazon.com/console/
+```
+
+Reference - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html
+
+
+## Create the Specialized DevOps User Which Will Be Used to Install and Maintain the App
 
   - Go to https://aws.amazon.com and login as you would on normal Amazon
   - In the search box, enter 'IAM' and select the 'IAM' result
@@ -33,14 +49,19 @@ Follow these steps to create this other (specialized 'DevOps') user.
   as the `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
     - This is a secret value that shouldn't be shared with others
 
+### If Necessary, Steps to Recreate the Key/Secret Pair in the Future
+
+_Since you've just created these values, you don't need to run these steps now but may
+need to do so in the future. Skip this section but know where these instructions are
+in case they are needed latter._
+
 Note - There is no way to view the 'Secret access key' value again. The only other option
 is to create another key/secret pair. If that's needed, do the following then update
 the `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID`/`TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` variable values.
-Since you've just created these values, you don't need to run these steps now but may
-need to do so in the future.
 
-  - Go to https://console.aws.amazon.com/iam/home and (if necessary) login
-  with your normal Amazon username/password
+Here are the steps to recreate the key/secret pair.
+
+  - Go to https://console.aws.amazon.com/iam/home and (if necessary) login as the `Root User`
   - Click the 'Users' link in the left column
   - Click the username link (should be the value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable)
   under the 'User name' column
@@ -54,43 +75,71 @@ need to do so in the future.
     - This is a secret value that shouldn't be shared with others
   - Click the 'Close' button
 
-##### Assign Appropriate Permissions to the Specialized DevOps User
+### Confirm that the `DevOps User` Can Login to the AWS Console
 
-After it's created, the specialized DevOps user can't do anything. Beyond the 'root'
-account (that's the one that can login to Amazon too) which can do anything, other users
-can't do anything unless they are explicitly assigned various rights to do specific
-things within AWS.
+Go to URL `#TF_VAR_AWS_DEVOPS_CONSOLE_URL#` and login using `#TF_VAR_AWS_DEVOPS_USERNAME#`
+as the username and `#TF_VAR_AWS_DEVOPS_PASSWORD#` as the password.
+
+### Configure `aws` Command-Line Tool
+
+Configure the `aws` command-line tool so that it executes commands at the `DevOps User`.
+Open the command prompt and execute the following (3) commands.
+
+```
+aws configure set aws_access_key_id "#TF_VAR_AWS_COGNITO_CLIENT_ID#"
+aws configure set aws_secret_access_key "#TF_VAR_AWS_COGNITO_CLIENT_SECRET#"
+aws configure set default.region "#TF_VAR_AWS_REGION#"
+```
+
+On Mac, these entries should now appear in the '~/.aws/credentials' and the '~/.aws/config' files.
+
+
+### Assign Appropriate Permissions to the `DevOps User`
+
+After it's created, the specialized `DevOps User` can't do anything. Beyond the `Root User`
+which can do anything, other users can't do anything unless they are explicitly assigned
+various rights to do specific things within AWS.
 
 In this section, you will be assigning appropriate permissions to the specialized DevOps
 user so that it can install and maintain the web application.
 
 This user needs various permissions including the following.
-  - `DynamoDB` - Read from and write to the application's user information database table
-  - `IAM` - Give the ability to create another user specifically for the web application
-  and assign it permissions it needs to run the application
   - `S3` - Read and write files
-  - `LightSail` - Create and manage a LightSail server with a static IP address
+  - `DynamoDB` - Read from and write to the application's user information database table
   - `Route53` - Add DNS records to route calls from the domain name
   (like 'https://chhcsfun.com') to the static IP address assigned to the LightSail instance
+  - `IAM` - Give the ability to create another user specifically for the web application
+  and assign it permissions it needs to run the application
+  - `LightSail` - Create and manage a LightSail server with a static IP address
+  - `Cognito` - Manage external user who can login to the application
 
-To add the correct permissions to this specialized DevOps user, do the following.
+To add the correct permissions to this specialized `DevOps User`, do the following.
 
   - Go to https://console.aws.amazon.com/iam/home and (if necessary) login
-  with your normal Amazon username/password
+  with your normal Amazon username/password (`Root User`)
   - Click the 'Users' link in the left column
   - Click the username link (should be the value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable)
   under the 'User name' column
-  - In the 'Permissions' tab under the 'Permissions policies' section, click the
-  'Add inline policy' link
-  - Click the 'JSON' tab
+
+Now that you're on the `DevOps User` profile page, do the following for each subsection below
+(each one's title starting with 'Permissions -'). _Many of these sections require variable
+substitutions - carefully make these substitutions and confirm that the '#' characters have
+been removed._
+  - In the 'Permissions' tab under the `Permissions policies` section, click the
+  `Add inline policy` link
+  - Click the `JSON` tab
   - Overwrite the contents in the text area with the contents found in the JSON block
-  below, but make sure to study the content carefully and perform all variable substitutions
+  of the subsection, but make sure to study the content carefully and perform
+  all variable substitutions
   - Click the 'Review policy' button
-  - In the 'Name' field, enter `policies_for_user_#TF_VAR_AWS_DEVOPS_USERNAME#`
+  - In the 'Name' field, enter the 'Policy Name' value listed in the subsection
   - Click the 'Create policy' button
 
 
-### S3 Permissions
+#### Permissions - S3
+
+  - Policy Name - `policies_for_s3`
+
 ```
 {
     "Version": "2012-10-17",
@@ -127,7 +176,10 @@ To add the correct permissions to this specialized DevOps user, do the following
 }
 ```
 
-### DynamoDB Permissions
+#### Permissions - DynamoDB
+
+  - Policy Name - `policies_for_dynamodb`
+
 ```
 {
     "Version": "2012-10-17",
@@ -153,7 +205,10 @@ To add the correct permissions to this specialized DevOps user, do the following
 }
 ```
 
-### Route53 Permissions
+#### Permissions - Route53
+
+  - Policy Name - `policies_for_route53`
+
 ```
 {
     "Version": "2012-10-17",
@@ -175,7 +230,10 @@ To add the correct permissions to this specialized DevOps user, do the following
 }
 ```
 
-### IAM Permissions
+#### Permissions - IAM
+
+  - Policy Name - `policies_for_route53`
+
 ```
 {
     "Version": "2012-10-17",
@@ -206,7 +264,10 @@ To add the correct permissions to this specialized DevOps user, do the following
 }
 ```
 
-### LightSail Permissions
+#### Permissions - LightSail
+
+  - Policy Name - `policies_for_lightsail`
+
 ```
 {
     "Version": "2012-10-17",
@@ -231,7 +292,10 @@ To add the correct permissions to this specialized DevOps user, do the following
 }
 ```
 
-### Cognito Permissions
+#### Permissions - Cognito
+
+  - Policy Name - `policies_for_cognito`
+
 ```
 {
     "Version": "2012-10-17",
@@ -250,16 +314,9 @@ To add the correct permissions to this specialized DevOps user, do the following
 
 Cognito Reference - https://docs.aws.amazon.com/cognito/latest/developerguide/resource-permissions.html
 
-##### Login to the AWS Console as the Specialized DevOps User
 
-Bookmark Url
-Use this user to login to the AWS console in the future
-Use Incognito user
 
-##### Create an Access Key for the Specialized DevOps User
-
-login to console
-
+# Ignore This Section
 
 #### Create Constrained User for This Application
 
@@ -405,21 +462,6 @@ Configure that user to use the `aws` command-line program.
 
 ### Prepare the Account as the Root User
 
-The owner of the account (the one who pays the bills) should _not_ be the one
-who uses the account to create and run the application. The owner can do anything
-without restraint. Instead, the owner should create a special user with limited rights
-to the account. Doing this lowers the likelihood of the following unwanted outcomes.
-
-  - The owner of the account can also log into `https://amazon.com` . If the owner
-  (like a parent) is different than the user deploying the application (like a child),
-  this other user will need the owner's username/password combination to log into
-  the AWS console (`https://aws.amazon.com/`). This will give the other user the
-  ability to order things on Amazon while charging bills to the owner, even if the
-  owner doesn't even know about it!
-  - The owner of the account can do anything in AWS, including needlessly running up
-  larger-than-necessary bills and using services that aren't required to get this
-  application up and running. It's better to create a user which only has permissions
-  to successfully install and use the application.
 
 
 

@@ -37,10 +37,27 @@ these instructions require two AWS users to complete.
   - `DevOps User` - This is the user who can't login to regular `amazon.com` but has just
   enough privileges to install and maintain this application.
 
-In these instructions, the Root User will be creating the DevOps User along with the AWS
-structures (like Cognito User Group, DynamoDB table, Route53 zone, S3 bucket). The DevOps User
+The owner of the account (the one who pays the bills - `Root User`) should _not_ be the one
+who uses the account to create and run the application. The owner can do anything
+without restraint. Instead, the owner should create a special user with limited rights
+to the account. Doing this lowers the likelihood of the following unwanted outcomes.
+
+  - The owner of the account can also log into `https://amazon.com` . If the owner
+  (like a parent) is different than the user deploying the application (like a child),
+  this other user will need the owner's username/password combination to log into
+  the AWS console (`https://aws.amazon.com/`). This will give the other user the
+  ability to order things on Amazon while charging bills to the owner, even if the
+  owner doesn't even know about it!
+  - The owner of the account can do anything in AWS, including needlessly running up
+  larger-than-necessary bills and using services that aren't required to get this
+  application up and running. It's better to create a user which only has permissions
+  to successfully install and use the application.
+
+
+In these instructions, the `Root User` will be creating the `DevOps User` along with the AWS
+structures (like Cognito User Group, DynamoDB table, Route53 zone, S3 bucket). The `DevOps User`
 will be using these AWS structures and create the LightSail instance to run this application.
-The DevOps User will also have the ability to destroy and to recreate the LightSail instance.
+The `DevOps User` will also have the ability to destroy and to recreate the LightSail instance.
 
 ## Billing
 
@@ -99,14 +116,13 @@ should be kept secret so don't share this list with others._
   - `TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
   - `TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
   - `TF_VAR_AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
+  - `TF_VAR_AWS_DEVOPS_CONSOLE_URL` - The login page of the `DevOps User`
   - `TF_VAR_AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
   - `TF_VAR_AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
-  - `TF_VAR_AWS_CUSTOM_LOGIN_URL` - This is the AWS account-specific login URL
   - `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` - This is the equivalent of a username for `aws` tool
   usage for the specialized account
   - `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` - This is the equivalent of a password for `aws` tool
   usage for the specialized account
-  - `TF_VAR_AWS_DEVOPS_CONSOLE_URL` - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-alias.html
 
 #### Convenience Script for MacOS
 
@@ -126,12 +142,11 @@ export TF_VAR_AWS_COGNITO_DOMAIN_NAME=""
 export TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=""
 export TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=""
 export TF_VAR_AWS_COGNITO_USER_POOL_ID=""
+export TF_VAR_AWS_DEVOPS_CONSOLE_URL=""
 export TF_VAR_AWS_DEVOPS_USERNAME=""
 export TF_VAR_AWS_DEVOPS_PASSWORD=""
-export TF_VAR_AWS_CUSTOM_LOGIN_URL=""
 export TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID=""
 export TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY=""
-export TF_VAR_AWS_DEVOPS_CONSOLE_URL=""
 ```
 
 As you derive these values following the rest of the steps in these instructions,
@@ -229,13 +244,63 @@ Confirm that the following variable values have been recorded in this section.
 
 ### Confirm Variable Values
 
+Confirm that the following variable values have been recorded in this section.
+
+  - `TF_VAR_AWS_DEVOPS_CONSOLE_URL`
+  - `TF_VAR_AWS_DEVOPS_USERNAME`
+  - `TF_VAR_AWS_DEVOPS_PASSWORD`
+  - `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID`
+  - `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY`
 
 
+## Run This Application Locally _With_ AWS Integration
+
+At this point, you should be able to run the application location _with_ AWS integration.
+
+For this section, run all commands from the same command prompt.
+
+### Stop and Confirm Completeness of Variable Values List
+
+Confirm that a variables in the 'List of Variable Values' section above now have values.
+You should have a script (like `~/Desktop/initVars.sh` if you're using a Mac) which
+can set these environment variables on the command line.
+
+### Remove Local Settings and Set Variable Values
+
+'LOCAL' environment variables were used when the application was run locally _without_
+AWS integration. When these variables are set, the application won't integrate with AWS.
+Since you will confirm AWS integration in this section, these variables must now be unset.
+
+From the command line, run the following commands to unset these 'LOCAL' variables.
+(These instructions should work for both Windows and Mac.)
+
+```
+unset LOCAL_CMS_PATH
+unset LOCAL_IAM_USER
+unset LOCAL_USER_DATA
+```
+
+You can confirm that these values are no longer set by listing the current environment
+variables with the `set` command on Windows and the `export` command on Mac.
+
+### Set AWS Environment Variables
+
+From the command line, run the script which initializes the variable values your recorded
+as environment values. On Mac, the `source ~/Desktop/initVars.sh` command will do this.
+
+You can confirm that these values are set by listing the current environment
+variables with the `set` command on Windows and the `export` command on Mac.
+
+### Run Local Server and Use Application
+
+Again, do the following.
+
+1) Using Maven, assemble the project with command `mvn clean install`
+2) Run the project with command `java -jar ./target/demo-0.0.1-SNAPSHOT.jar`
+3) Open a browser and go to `http://localhost:8080/`
 
 
-
-
-
+# Ignore This Section
 
 
 
