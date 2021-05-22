@@ -12,13 +12,13 @@ Follow these steps to create this other (specialized 'DevOps') user.
   - Go to https://aws.amazon.com and login as you would on normal Amazon
   - In the search box, enter 'IAM' and select the 'IAM' result
   - In the left column, click the 'Users' link
-  - In the 'User name' text box, enter a username of your choice (like 'chhcsfun')
+  - In the 'User name' text box, enter a username of your choice (like `'devops_user'`)
   - Under 'Access type,' select both 'Progammatic access' (from `aws` tool)
   and 'AWS Management Console access' (from browser) options
-    - Record this value as the `AWS_DEVOPS_USERNAME` variable value
+    - Record this value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable value
   - Under the 'Console password' section, select the 'Custom password' option
   then enter a password of your choosing
-    - Record this value as the `AWS_DEVOPS_PASSWORD` variable value
+    - Record this value as the `TF_VAR_AWS_DEVOPS_PASSWORD` variable value
     - This is a secret value that shouldn't be shared with others
   - Uncheck the 'Require password reset' option
   - Click the 'Next: Permissions' button
@@ -28,29 +28,29 @@ Follow these steps to create this other (specialized 'DevOps') user.
   - Confirm the 'Success' area appears indicatating that the specialized user
   has now been created
   - Record the value in the 'Access key ID' column
-  as the `AWS_DEVOPS_ACCESS_KEY_ID` variable value
+  as the `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` variable value
   - Record the value in the 'Secret access key' column
-  as the `AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
+  as the `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
     - This is a secret value that shouldn't be shared with others
 
 Note - There is no way to view the 'Secret access key' value again. The only other option
 is to create another key/secret pair. If that's needed, do the following then update
-the `AWS_DEVOPS_ACCESS_KEY_ID`/`AWS_DEVOPS_SECRET_ACCESS_KEY` variable values.
+the `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID`/`TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` variable values.
 Since you've just created these values, you don't need to run these steps now but may
 need to do so in the future.
 
   - Go to https://console.aws.amazon.com/iam/home and (if necessary) login
   with your normal Amazon username/password
   - Click the 'Users' link in the left column
-  - Click the username link (should be the value as the `AWS_DEVOPS_USERNAME` variable)
+  - Click the username link (should be the value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable)
   under the 'User name' column
   - Click the 'Security credentials' tab
   - Under the 'Access keys' section, click the 'Create access key' button
   - Record the value in the 'Access key ID' column
-  as the `AWS_DEVOPS_ACCESS_KEY_ID` variable value
+  as the `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` variable value
   - Click the 'Show' hyperlink
   - Record the value in the 'Secret access key' column
-  as the `AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
+  as the `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
     - This is a secret value that shouldn't be shared with others
   - Click the 'Close' button
 
@@ -78,7 +78,7 @@ To add the correct permissions to this specialized DevOps user, do the following
   - Go to https://console.aws.amazon.com/iam/home and (if necessary) login
   with your normal Amazon username/password
   - Click the 'Users' link in the left column
-  - Click the username link (should be the value as the `AWS_DEVOPS_USERNAME` variable)
+  - Click the username link (should be the value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable)
   under the 'User name' column
   - In the 'Permissions' tab under the 'Permissions policies' section, click the
   'Add inline policy' link
@@ -86,9 +86,11 @@ To add the correct permissions to this specialized DevOps user, do the following
   - Overwrite the contents in the text area with the contents found in the JSON block
   below, but make sure to study the content carefully and perform all variable substitutions
   - Click the 'Review policy' button
-  - In the 'Name' field, enter 'policies_for_user_#AWS_DEVOPS_USERNAME#'
+  - In the 'Name' field, enter `policies_for_user_#TF_VAR_AWS_DEVOPS_USERNAME#`
   - Click the 'Create policy' button
 
+
+### S3 Permissions
 ```
 {
     "Version": "2012-10-17",
@@ -101,7 +103,7 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "s3:GetObject",
                 "s3:PutObject"
             ],
-            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#/*"
+            "Resource": "arn:aws:s3:::#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#/*"
         },
         {
             "Sid": "OneAndHalf",
@@ -111,7 +113,7 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "s3:GetBucketPolicy",
                 "s3:PutBucketPolicy"
             ],
-            "Resource": "arn:aws:s3:::#AWS_S3_BUCKET_NAME_CONTENT#"
+            "Resource": "arn:aws:s3:::#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#"
         },
         {
             "Sid": "OneAndHalfAgain",
@@ -120,7 +122,16 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "s3:ListAllMyBuckets"
             ],
             "Resource": "arn:aws:s3:::*"
-        },
+        }
+    ]
+}
+```
+
+### DynamoDB Permissions
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "Two",
             "Effect": "Allow",
@@ -136,8 +147,17 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "dynamodb:Query",
                 "dynamodb:GetRecords"
             ],
-            "Resource": "arn:aws:dynamodb:#AWS_REGION#:#AWS_ACCOUNT_ID#:table/#AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
-        },
+            "Resource": "arn:aws:dynamodb:#TF_VAR_AWS_REGION#:#TF_VAR_AWS_ACCOUNT_ID#:table/#TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
+        }
+    ]
+}
+```
+
+### Route53 Permissions
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "Four",
             "Effect": "Allow",
@@ -150,7 +170,16 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "route53:ListTagsForResource"
             ],
             "Resource": "*"
-        },
+        }
+    ]
+}
+```
+
+### IAM Permissions
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "Five",
             "Effect": "Allow",
@@ -172,7 +201,16 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "iam:ListPolicyVersions"
             ],
             "Resource": "*"
-        },
+        }
+    ]
+}
+```
+
+### LightSail Permissions
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "Six",
             "Effect": "Allow",
@@ -188,7 +226,16 @@ To add the correct permissions to this specialized DevOps user, do the following
                 "lightsail:ReleaseStaticIp"
             ],
             "Resource": "*"
-        },
+        }
+    ]
+}
+```
+
+### Cognito Permissions
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "Seven",
             "Effect": "Allow",
@@ -241,7 +288,7 @@ Generate user and get key-secret pair
 
   - Go to https://console.aws.amazon.com/iam/home?region=us-east-1#/users
   - Click the 'Add user' button
-  - For 'User name' section enter 'chhcsfun' in the text box
+  - For 'User name' section enter `'chhcsfun'` in the text box
   - Under 'Access type' section check both 'Programmatic access' checkbox
   and 'AWS Management Console access' checkbox
   - Under 'Console password' section, select 'Custom password' radio button,
@@ -278,7 +325,7 @@ Configure that user to use the `aws` command-line program.
                 "s3:GetObject",
                 "s3:PutObject"
             ],
-            "Resource": "arn:aws:s3:::content.chhcsfun.com/*"
+            "Resource": "arn:aws:s3:::#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#/*"
         },
         {
             "Sid": "OneAndHalf",
@@ -288,7 +335,7 @@ Configure that user to use the `aws` command-line program.
                 "s3:GetBucketPolicy",
                 "s3:PutBucketPolicy"
             ],
-            "Resource": "arn:aws:s3:::content.chhcsfun.com"
+            "Resource": "arn:aws:s3:::#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#"
         },
         {
             "Sid": "Two",
@@ -299,7 +346,7 @@ Configure that user to use the `aws` command-line program.
                 "dynamodb:ListTagsOfResource",
                 "dynamodb:DescribeContinuousBackups"
             ],
-            "Resource": "arn:aws:dynamodb:us-east-1:<AWS_ACCOUNT_ID>:table/userAppData.chhcsfun.com"
+            "Resource": "arn:aws:dynamodb:us-east-1:#TF_VAR_AWS_ACCOUNT_ID#:table/#TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
         },
         {
             "Sid": "Four",
@@ -393,7 +440,7 @@ to the account. Doing this lowers the likelihood of the following unwanted outco
                 "cognito-idp:Admin*",
                 "cognito-idp:List*"
             ],
-            "Resource": "arn:aws:cognito-idp:<REGION>:<ACCOUNT_ID>:userpool/<POOL_ID>"
+            "Resource": "arn:aws:cognito-idp:#TF_VAR_AWS_REGION#:#TF_VAR_AWS_ACCOUNT_ID#:userpool/#TF_VAR_AWS_COGNITO_USER_POOL_ID#"
         }
 
 
