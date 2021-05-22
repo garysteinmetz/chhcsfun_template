@@ -41,6 +41,6 @@ name is available without actually reserving it).
   - Click the 'Complete Order' button
 
 Record this domain name as the `TF_VAR_AWS_DOMAIN_NAME` variable value.
-(Don't include 'www.' in it!)
+_(Don't include 'www.' in it!)_
 
 [Click here to go back to the main page.](../../README.md)

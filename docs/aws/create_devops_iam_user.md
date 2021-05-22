@@ -25,13 +25,14 @@ Reference - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-ali
 
 ## Create the Specialized DevOps User Which Will Be Used to Install and Maintain the App
 
-  - Go to https://aws.amazon.com and login as you would on normal Amazon
+  - Go to https://aws.amazon.com and login as you would on normal Amazon (`Root User`)
   - In the search box, enter 'IAM' and select the 'IAM' result
   - In the left column, click the 'Users' link
-  - In the 'User name' text box, enter a username of your choice (like `'devops_user'`)
+  - Click the 'Add user' button
+  - In the 'User name' text box, enter a username of your choice (like `devops_user`)
+    - Record this value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable value
   - Under 'Access type,' select both 'Progammatic access' (from `aws` tool)
   and 'AWS Management Console access' (from browser) options
-    - Record this value as the `TF_VAR_AWS_DEVOPS_USERNAME` variable value
   - Under the 'Console password' section, select the 'Custom password' option
   then enter a password of your choosing
     - Record this value as the `TF_VAR_AWS_DEVOPS_PASSWORD` variable value
@@ -41,12 +42,13 @@ Reference - https://docs.aws.amazon.com/IAM/latest/UserGuide/console_account-ali
   - For now, ignore adding permissions and instead click the 'Next: Tags' button
   - Click the 'Next: Review' button
   - Click the 'Create user' button
-  - Confirm the 'Success' area appears indicatating that the specialized user
+  - Confirm the 'Success' area appears indicatating that the `DevOps User`
   has now been created
   - Record the value in the 'Access key ID' column
   as the `TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID` variable value
   - Record the value in the 'Secret access key' column
   as the `TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY` variable value
+    - Click the 'Show' link to make this value visible
     - This is a secret value that shouldn't be shared with others
 
 ### If Necessary, Steps to Recreate the Key/Secret Pair in the Future
@@ -77,8 +79,9 @@ Here are the steps to recreate the key/secret pair.
 
 ### Confirm that the `DevOps User` Can Login to the AWS Console
 
-Go to URL `#TF_VAR_AWS_DEVOPS_CONSOLE_URL#` and login using `#TF_VAR_AWS_DEVOPS_USERNAME#`
-as the username and `#TF_VAR_AWS_DEVOPS_PASSWORD#` as the password.
+In an incognito browser, go to URL `#TF_VAR_AWS_DEVOPS_CONSOLE_URL#`
+and login using `#TF_VAR_AWS_DEVOPS_USERNAME#` as the username
+and `#TF_VAR_AWS_DEVOPS_PASSWORD#` as the password.
 
 ### Configure `aws` Command-Line Tool
 
@@ -86,12 +89,12 @@ Configure the `aws` command-line tool so that it executes commands at the `DevOp
 Open the command prompt and execute the following (3) commands.
 
 ```
-aws configure set aws_access_key_id "#TF_VAR_AWS_COGNITO_CLIENT_ID#"
-aws configure set aws_secret_access_key "#TF_VAR_AWS_COGNITO_CLIENT_SECRET#"
+aws configure set aws_access_key_id "#TF_VAR_AWS_DEVOPS_ACCESS_KEY_ID#"
+aws configure set aws_secret_access_key "#TF_VAR_AWS_DEVOPS_SECRET_ACCESS_KEY#"
 aws configure set default.region "#TF_VAR_AWS_REGION#"
 ```
 
-On Mac, these entries should now appear in the '~/.aws/credentials' and the '~/.aws/config' files.
+On Mac, these entries should now appear in the '\~/.aws/credentials' and the '\~/.aws/config' files.
 
 
 ### Assign Appropriate Permissions to the `DevOps User`
@@ -100,8 +103,8 @@ After it's created, the specialized `DevOps User` can't do anything. Beyond the 
 which can do anything, other users can't do anything unless they are explicitly assigned
 various rights to do specific things within AWS.
 
-In this section, you will be assigning appropriate permissions to the specialized DevOps
-user so that it can install and maintain the web application.
+In this section, you will be assigning appropriate permissions to the specialized `DevOps User`
+so that it can install and maintain the web application.
 
 This user needs various permissions including the following.
   - `S3` - Read and write files
@@ -232,7 +235,7 @@ been removed._
 
 #### Permissions - IAM
 
-  - Policy Name - `policies_for_route53`
+  - Policy Name - `policies_for_iam`
 
 ```
 {

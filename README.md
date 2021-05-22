@@ -100,7 +100,7 @@ export TF_VAR_DOMAIN_NAME="chhcsfun.com"
 
 ### List of Variable Values
 
-Write down (either (preferrably) electronically or on paper) a table consisting of two columns.
+Write down (either (preferably) electronically or on paper) a table consisting of two columns.
 The left column should be filled with the variable names listed below and in the right
 column write the value of that variable as you discover it. _Note that some of these values
 should be kept secret so don't share this list with others._
@@ -110,12 +110,12 @@ should be kept secret so don't share this list with others._
   - `TF_VAR_AWS_DOMAIN_NAME` - The hostname (like 'chhcsfun.com') of the web site
   - `TF_VAR_AWS_S3_BUCKET_NAME_CONTENT` - The name of the S3 bucket
   - `TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` - The name of the DynamoDB table
+  - `TF_VAR_AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
   - `TF_VAR_AWS_COGNITO_CLIENT_ID` - The client ID (like a username) to access Cognito
   - `TF_VAR_AWS_COGNITO_CLIENT_SECRET` - The client secret (like a password) to access Cognito
   - `TF_VAR_AWS_COGNITO_DOMAIN_NAME` - The base URL for your application's login capabilities
   - `TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL` - The login URL for users using your application
   - `TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL` - The URL your application accesses to confirm a user login
-  - `TF_VAR_AWS_COGNITO_USER_POOL_ID` - The AWS ID assigned to the pool of users of your application
   - `TF_VAR_AWS_DEVOPS_CONSOLE_URL` - The login page of the `DevOps User`
   - `TF_VAR_AWS_DEVOPS_USERNAME` - The username of the specialized account used to access AWS
   - `TF_VAR_AWS_DEVOPS_PASSWORD` - The password of the specialized account used to access AWS
@@ -136,12 +136,12 @@ export TF_VAR_AWS_REGION=""
 export TF_VAR_AWS_DOMAIN_NAME=""
 export TF_VAR_AWS_S3_BUCKET_NAME_CONTENT=""
 export TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=""
+export TF_VAR_AWS_COGNITO_USER_POOL_ID=""
 export TF_VAR_AWS_COGNITO_CLIENT_ID=""
 export TF_VAR_AWS_COGNITO_CLIENT_SECRET=""
 export TF_VAR_AWS_COGNITO_DOMAIN_NAME=""
 export TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=""
 export TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=""
-export TF_VAR_AWS_COGNITO_USER_POOL_ID=""
 export TF_VAR_AWS_DEVOPS_CONSOLE_URL=""
 export TF_VAR_AWS_DEVOPS_USERNAME=""
 export TF_VAR_AWS_DEVOPS_PASSWORD=""
@@ -167,7 +167,7 @@ run command `source ~/Desktop/initVars.sh` .
 ## For `Root User`, Record the AWS Account ID and Set the Default Region
 
   - Go to https://aws.amazon.com and login as the `Root User`
-  - Click your name in the top left and record the number next to 'My Account'
+  - Click your name in the top right and record the number next to 'My Account'
   as the `TF_VAR_AWS_ACCOUNT_ID` variable value
 
 ### Always Use the `us-east-1` AWS Region
@@ -234,9 +234,9 @@ Confirm that the following variable values have been recorded in this section.
   - `TF_VAR_AWS_COGNITO_USER_POOL_ID`
   - `TF_VAR_AWS_COGNITO_CLIENT_ID`
   - `TF_VAR_AWS_COGNITO_CLIENT_SECRET`
+  - `TF_VAR_AWS_COGNITO_DOMAIN_NAME`
   - `TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL`
   - `TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL`
-  - `TF_VAR_AWS_COGNITO_DOMAIN_NAME`
 
 ## Create AWS Entity - `DevOps` User
 
@@ -291,6 +291,34 @@ as environment values. On Mac, the `source ~/Desktop/initVars.sh` command will d
 You can confirm that these values are set by listing the current environment
 variables with the `set` command on Windows and the `export` command on Mac.
 
+### Upload Web Files to S3
+
+Now that the application will be integrated with AWS, the web files used
+by the web application will need to be uploaded to S3.
+
+From the same directory as this file, run the following command from the command line.
+
+```
+aws s3 sync --acl public-read --exclude ".*" ./examples/coin_flip_game/content s3://#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#/content
+```
+
+#### (Optional) Review S3 Bucket Contents
+
+If the previous command completed without error, then the files successfully uploaded to S3.
+
+But you have the option of logging into AWS as the `DevOps User` (obviously the `Root User`
+could do this too because that user can do anything) and review the contents of the S3 bucket.
+
+Here are the steps.
+  - Open an incognito browser and go to `#TF_VAR_AWS_DEVOPS_CONSOLE_URL#`
+  - Login as the `DevOps User`
+  - In the search box, enter 'S3' and select the 'S3' result
+  - Scroll down the table and select the `#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#` link
+  under the 'Name'
+  - Click the 'content/' link under the 'Name' column
+  - Confirm that the (3) files in the './examples/coin_flip_game/content' are listed
+  in the table
+
 ### Run Local Server and Use Application
 
 Again, do the following.
@@ -298,6 +326,24 @@ Again, do the following.
 1) Using Maven, assemble the project with command `mvn clean install`
 2) Run the project with command `java -jar ./target/demo-0.0.1-SNAPSHOT.jar`
 3) Open a browser and go to `http://localhost:8080/`
+4) Login (this will require you to create an account) and play for a few minutes
+
+Once finished, in the command prompt hold down the `Control` button then press `c`
+to stop the local server.
+
+#### (Optional, But Recommended) Review Cognito User Group and DynamoDB Table
+
+The user (you) that just played the game has saved information into AWS.
+
+Here's how to examine that information.
+  - Open an incognito browser and go to `#TF_VAR_AWS_DEVOPS_CONSOLE_URL#`
+  - Login as the `DevOps User`
+  - In the search box, enter 'Cognito' and select the 'Cognito' result
+  - Click the 'Manage User Pools' button
+    - This part here needs to be updated, continue with DynamoDB table analysis
+  - In the search box, enter 'DynamoDB' and select the 'DynamoDB' result
+    - This part needs to be updated
+
 
 
 # Ignore This Section

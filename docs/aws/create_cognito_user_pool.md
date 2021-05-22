@@ -3,13 +3,13 @@
 [Click here to go back to the main page.](../../README.md)
 
 
-  - Go to https://aws.amazon.com and login as you would on normal Amazon
+  - Go to https://aws.amazon.com and login as you would on normal Amazon (as `Root User`)
     - The browser should go to https://console.aws.amazon.com/console/home
   - Make sure you have selected the correct AWS region (like 'US East (N. Virginia) us-east-1')
   - In the search box, enter 'Cognito' and select the 'Cognito' result
   - Click the 'Manage User Pools' button
   - Click the 'Create a user pool' button
-  - Enter `#TF_VAR_AWS_DOMAIN_NAME#` for the name of the user pool
+  - Enter `#TF_VAR_AWS_DOMAIN_NAME#` for the name of the user pool ('Pool name' field)
   - Click the 'Review defaults' button
   - Scroll to the bottom of the page and click the 'Create pool' button
   - In the resulting page, record the 'Pool Id' value at the top

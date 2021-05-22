@@ -8,9 +8,9 @@
   - Click the 'Create table' button
   - Click the 'Tables' link in the left column
   - Click the 'Create table' button
-  - In the 'Table name' field, enter `userAppData.#DOMAIN_NAME#`
-  - In the 'Partition key' field, enter 'app_id'
-  - Check the 'Add sort key' checkbox and enter 'user_id' in field just below it
+  - In the 'Table name' field, enter `userAppData.#TF_VAR_AWS_DOMAIN_NAME#`
+  - In the 'Partition key' field, enter `app_id`
+  - Check the 'Add sort key' checkbox and enter `user_id` in field just below it
   - Scroll down the page and click the 'Create' button
   - Record the table name as the `TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA` variable value
 
