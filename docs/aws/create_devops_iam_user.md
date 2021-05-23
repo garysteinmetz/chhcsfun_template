@@ -148,27 +148,27 @@ been removed._
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "One",
+            "Sid": "A",
             "Effect": "Allow",
             "Action": [
                 "s3:DeleteObject",
-                "s3:GetObject",
+                "s3:Get*",
                 "s3:PutObject"
             ],
             "Resource": "arn:aws:s3:::#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#/*"
         },
         {
-            "Sid": "OneAndHalf",
+            "Sid": "B",
             "Effect": "Allow",
             "Action": [
                 "s3:ListBucket",
-                "s3:GetBucketPolicy",
+                "s3:Get*",
                 "s3:PutBucketPolicy"
             ],
             "Resource": "arn:aws:s3:::#TF_VAR_AWS_S3_BUCKET_NAME_CONTENT#"
         },
         {
-            "Sid": "OneAndHalfAgain",
+            "Sid": "C",
             "Effect": "Allow",
             "Action": [
                 "s3:ListAllMyBuckets"
@@ -188,21 +188,25 @@ been removed._
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Two",
+            "Sid": "A",
             "Effect": "Allow",
             "Action": [
-                "dynamodb:DescribeTable",
-                "dynamodb:DescribeTimeToLive",
-                "dynamodb:ListTagsOfResource",
-                "dynamodb:DescribeContinuousBackups",
-                "dynamodb:GetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "B",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Get*",
                 "dynamodb:PutItem",
                 "dynamodb:Scan",
                 "dynamodb:UpdateItem",
-                "dynamodb:Query",
-                "dynamodb:GetRecords"
+                "dynamodb:Query"
             ],
-            "Resource": "arn:aws:dynamodb:#TF_VAR_AWS_REGION#:#TF_VAR_AWS_ACCOUNT_ID#:table/#TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
+            "Resource": "arn:aws:dynamodb:*:*:table/#TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA#"
         }
     ]
 }
@@ -221,11 +225,8 @@ been removed._
             "Effect": "Allow",
             "Action": [
                 "route53:ChangeResourceRecordSets",
-                "route53:GetChange",
-                "route53:GetHostedZone",
-                "route53:ListHostedZones",
-                "route53:ListResourceRecordSets",
-                "route53:ListTagsForResource"
+                "route53:Get*",
+                "route53:List*"
             ],
             "Resource": "*"
         }
@@ -253,13 +254,8 @@ been removed._
                 "iam:DeletePolicy",
                 "iam:DeleteUser",
                 "iam:DetachUserPolicy",
-                "iam:GetPolicy",
-                "iam:GetPolicyVersion",
-                "iam:GetUser",
-                "iam:ListAccessKeys",
-                "iam:ListEntitiesForPolicy",
-                "iam:ListGroupsForUser",
-                "iam:ListPolicyVersions"
+                "iam:Get*",
+                "iam:List*"
             ],
             "Resource": "*"
         }
@@ -284,9 +280,7 @@ been removed._
                 "lightsail:CreateInstances",
                 "lightsail:DeleteInstance",
                 "lightsail:DetachStaticIp",
-                "lightsail:GetInstance",
-                "lightsail:GetOperation",
-                "lightsail:GetStaticIp",
+                "lightsail:Get*",
                 "lightsail:ReleaseStaticIp"
             ],
             "Resource": "*"
@@ -304,12 +298,21 @@ been removed._
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Seven",
+            "Sid": "A",
             "Effect": "Allow",
             "Action": [
-                "cognito-identity:ListIdentityPools"
+                "cognito-idp:Describe*",
+                "cognito-idp:List*"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "B",
+            "Effect": "Allow",
+            "Action": [
+                "cognito-idp:Admin*"
+            ],
+            "Resource": "arn:aws:cognito-idp:*:*:userpool/#TF_VAR_AWS_COGNITO_USER_POOL_ID#"
         }
     ]
 }
