@@ -1,11 +1,13 @@
 data aws_caller_identity current {}
 data aws_region current {}
 
+provider aws {
+  region = var.AWS_REGION
+}
+
 locals {
   # Note - S3 bucket names must be unique througout AWS so append user ID to ensure uniqueness
-  bucket_name = "${var.S3_BUCKET_NAME_PREFIX}${var.DOMAIN_NAME}"
-  table_name = "${var.DYNAMODB_TABLE_NAME_PREFIX}${var.DOMAIN_NAME}"
-  lightsail_instance_name = var.DOMAIN_NAME
+  lightsail_instance_name = var.AWS_DOMAIN_NAME
   lightsail_startup_script = <<EOF
 sudo su ${var.APP_OS_USER}
 cd $(getent passwd ${var.APP_OS_USER} | cut -d: -f6)
@@ -24,28 +26,26 @@ sudo aws configure set default.region "${data.aws_region.current.name}"
 touch 7
 sudo aws lightsail put-instance-public-ports --instance-name=${local.lightsail_instance_name} --port-infos ${var.APP_PORTS}
 touch 8
-sudo aws s3 cp s3://${local.bucket_name}/app.jar ./app.jar 1> ./resultDownloadApp.txt 2> ./errorDownloadApp.txt
+sudo aws s3 cp s3://${var.AWS_S3_BUCKET_NAME_CONTENT}/app.jar ./app.jar 1> ./resultDownloadApp.txt 2> ./errorDownloadApp.txt
 touch 9
 touch ./initEnv.sh
 touch 10
-echo "export 'TF_VAR_AWS_COGNITO_CLIENT_ID=${var.AWS_COGNITO_CLIENT_ID}'" >> ./initEnv.sh
-touch 11
-echo "export 'TF_VAR_AWS_COGNITO_CLIENT_SECRET=${var.AWS_COGNITO_CLIENT_SECRET}'" >> ./initEnv.sh
-touch 12
-echo "export 'TF_VAR_AWS_COGNITO_GROUP_DEVELOPERS=${var.AWS_COGNITO_GROUP_DEVELOPERS}'" >> ./initEnv.sh
-touch 13
-echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=${var.AWS_COGNITO_OAUTH2_AUTHORIZE_URL}'" >> ./initEnv.sh
-touch 14
-echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=${var.AWS_COGNITO_OAUTH2_TOKEN_URL}'" >> ./initEnv.sh
-touch 15
-echo "export 'TF_VAR_AWS_COGNITO_USER_POOL_ID=${var.AWS_COGNITO_USER_POOL_ID}'" >> ./initEnv.sh
-touch 16
-echo "export 'TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=${local.table_name}'" >> ./initEnv.sh
-touch 17
 echo "export 'TF_VAR_AWS_S3_BUCKET_NAME_CONTENT=${var.AWS_S3_BUCKET_NAME_CONTENT}'" >> ./initEnv.sh
+touch 11
+echo "export 'TF_VAR_AWS_DYNAMODB_TABLE_NAME_USERAPPDATA=${var.AWS_DYNAMODB_TABLE_NAME_USERAPPDATA}'" >> ./initEnv.sh
+touch 12
+echo "export 'TF_VAR_AWS_COGNITO_CLIENT_ID=${var.AWS_COGNITO_CLIENT_ID}'" >> ./initEnv.sh
+touch 13
+echo "export 'TF_VAR_AWS_COGNITO_CLIENT_SECRET=${var.AWS_COGNITO_CLIENT_SECRET}'" >> ./initEnv.sh
+touch 14
+echo "export 'TF_VAR_AWS_COGNITO_DOMAIN_NAME=${var.AWS_COGNITO_DOMAIN_NAME}'" >> ./initEnv.sh
+touch 15
+echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_AUTHORIZE_URL=${var.AWS_COGNITO_OAUTH2_AUTHORIZE_URL}'" >> ./initEnv.sh
+touch 16
+echo "export 'TF_VAR_AWS_COGNITO_OAUTH2_TOKEN_URL=${var.AWS_COGNITO_OAUTH2_TOKEN_URL}'" >> ./initEnv.sh
+touch 17
+echo "export 'TF_VAR_AWS_COGNITO_USER_POOL_ID=${var.AWS_COGNITO_USER_POOL_ID}'" >> ./initEnv.sh
 touch 18
-echo "export 'TF_VAR_AWS_S3_BUCKET_PERUSERLIMIT=${var.AWS_S3_BUCKET_PERUSERLIMIT}'" >> ./initEnv.sh
-touch 19
 chmod 777 ./initEnv.sh
 touch 20
 cat ./initEnv.sh > pre.out
@@ -109,19 +109,19 @@ EOF
 
 # Note - Use eTag
 data aws_s3_bucket chhcsfun {
-  bucket = local.bucket_name
+  bucket = var.AWS_S3_BUCKET_NAME_CONTENT
 }
 
 data aws_dynamodb_table chhcsfun {
-  name = local.table_name
+  name = var.AWS_DYNAMODB_TABLE_NAME_USERAPPDATA
 }
 
 data aws_route53_zone primary {
-  name = var.DOMAIN_NAME
+  name = var.AWS_DOMAIN_NAME
 }
 resource aws_route53_record main {
   zone_id = data.aws_route53_zone.primary.zone_id
-  name = var.DOMAIN_NAME
+  name = var.AWS_DOMAIN_NAME
   type = "A"
   ttl = 300
   records = [aws_lightsail_static_ip_attachment.chhcsfun.ip_address]
@@ -169,7 +169,7 @@ resource aws_iam_policy policy {
     {
       "Action": ["s3:GetObject"],
       "Effect": "Allow",
-      "Resource": "arn:aws:s3:::${local.bucket_name}/*"
+      "Resource": "arn:aws:s3:::${var.AWS_S3_BUCKET_NAME_CONTENT}/*"
     },
     {
       "Action": ["dynamodb:GetItem"],

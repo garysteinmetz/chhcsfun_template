@@ -221,7 +221,7 @@ been removed._
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Four",
+            "Sid": "A",
             "Effect": "Allow",
             "Action": [
                 "route53:ChangeResourceRecordSets",
@@ -243,7 +243,7 @@ been removed._
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Five",
+            "Sid": "A",
             "Effect": "Allow",
             "Action": [
                 "iam:AttachUserPolicy",
@@ -272,7 +272,7 @@ been removed._
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "Six",
+            "Sid": "A",
             "Effect": "Allow",
             "Action": [
                 "lightsail:AllocateStaticIp",
