@@ -252,6 +252,7 @@ been removed._
                 "iam:CreateUser",
                 "iam:DeleteAccessKey",
                 "iam:DeletePolicy",
+                "iam:DeletePolicyVersion",
                 "iam:DeleteUser",
                 "iam:DetachUserPolicy",
                 "iam:Get*",

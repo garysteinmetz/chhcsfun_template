@@ -135,7 +135,7 @@ resource aws_route53_record www {
 }
 
 resource aws_lightsail_static_ip chhcsfun {
-  name = "chhcsfun_static_ip"
+  name = "${var.AWS_DOMAIN_NAME}_static_ip"
 }
 
 resource aws_lightsail_static_ip_attachment chhcsfun {
@@ -148,12 +148,12 @@ resource aws_iam_access_key chhcsfun_lightsail_user {
 }
 
 resource aws_iam_user chhcsfun_lightsail_user {
-  name = "chhcsfun_lightsail_user"
+  name = "${var.AWS_DOMAIN_NAME}_lightsail_user"
 }
 
 resource aws_lightsail_instance chhcsfun {
   name = local.lightsail_instance_name
-  availability_zone = "us-east-1a"
+  availability_zone = var.AWS_REGION
   blueprint_id = "ubuntu_20_04"
   bundle_id = "nano_2_0"
   user_data = local.lightsail_startup_script
@@ -161,7 +161,7 @@ resource aws_lightsail_instance chhcsfun {
 }
 
 resource aws_iam_policy policy {
-  name = "chhcsfun_policies"
+  name = "app_policies"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -172,7 +172,7 @@ resource aws_iam_policy policy {
       "Resource": "arn:aws:s3:::${var.AWS_S3_BUCKET_NAME_CONTENT}/*"
     },
     {
-      "Action": ["dynamodb:GetItem"],
+      "Action": ["dynamodb:GetItem", "dynamodb:PutItem"],
       "Effect": "Allow",
       "Resource": "${data.aws_dynamodb_table.chhcsfun.arn}"
     },
