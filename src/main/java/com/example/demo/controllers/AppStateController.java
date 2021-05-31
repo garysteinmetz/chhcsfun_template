@@ -21,6 +21,10 @@ import java.util.*;
 
 @Controller
 public class AppStateController {
+    //
+    //https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html
+    //"For every distinct partition key value, the total sizes of all table and index items cannot exceed 10 GB."
+    private static final String APP_NAME_PATTERN = "^app[0-1][0-9]$";
     //@Autowired
     //DynamoDBService dynamoDBService;
     @Autowired
@@ -30,6 +34,10 @@ public class AppStateController {
     public ResponseEntity saveAppState(
             @PathVariable String appName, @RequestParam("appData") String data, HttpSession httpSession) {
         //
+        if (appName == null || !appName.matches(APP_NAME_PATTERN)) {
+            final String errorMessage = "'appName' '" + appName + "' does not match pattern '" + APP_NAME_PATTERN + "'";
+            return new ResponseEntity<>(errorMessage, null, HttpStatus.BAD_REQUEST);
+        }
         //System.out.println("ZZZ Received - " + appName);
         //System.out.println("ZZZ Received - " + data);
         Optional<UserSession> userSession = UserSession.getSession(httpSession);

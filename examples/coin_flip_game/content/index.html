@@ -2,7 +2,7 @@
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        var game = 'coinflipgame';
+        var game = 'app10';
         var allPlayerData = [];
         var user;
         var topScore = -1;
@@ -83,7 +83,7 @@
             $(baseDiv).append(div);
             //
             if (userInfo.isLoggedIn) {
-                $(div).text("Hello " + userInfo.displayName + "!");
+                $(div).text("Hello " + userInfo.username + "!");
             } else {
                 var href = window.location.origin + "/login?url=" + encodeURIComponent(document.URL);
                 var a = document.createElement( "a" );

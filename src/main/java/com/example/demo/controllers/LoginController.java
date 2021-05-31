@@ -46,7 +46,7 @@ public class LoginController {
         Optional<UserSession> session = UserSession.getSession(httpSession);
         if (session.isPresent()) {
             outValue.put("isLoggedIn", true);
-            outValue.put("displayName", session.get().getName());
+            outValue.put("username", session.get().getUsername());
         }
         return outValue;
     }

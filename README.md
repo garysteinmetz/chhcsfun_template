@@ -552,3 +552,8 @@ Calling web services from Phaser
 Delete everything in the AWS account
 
 //
+
+Verification Instructions, Delete Instructions, Backend State Store
+Server-Side Example, Phaser Example, Prevent Pool Delete
+Route53 Instructions, API Usage Instructions (with Login)
+Non-Data Hosted Zone, Cross-Account User Visibility
