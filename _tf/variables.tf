@@ -15,6 +15,10 @@ variable "AWS_ACCOUNT_ID" {
 variable "AWS_REGION" {
   type = string
 }
+variable "AWS_AVAILABILITY_ZONE" {
+  type = string
+  default = ""
+}
 variable "AWS_DOMAIN_NAME" {
   type = string
 }

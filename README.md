@@ -264,6 +264,19 @@ As documented in the link above, the game's files should be uploaded to S3,
 the user is listed in the Cognito user group, and that user's data is listed
 in the DynamoDB table.
 
+## Run This Application Publicly
+
+[The moment has arrived - click here to run this application on the internet
+ for all to use!](docs/app/run_publically_on_lightsail.md)
+
+### Confirm Application Is Publically Available
+
+Open a browser and go to `https://#TF_VAR_AWS_DOMAIN_NAME#` and play the 'coin flip' game!
+Ask your family and friends to play it too.
+
+Optionally, as the `DevOps User` confirm that all users have entries
+in the Cognito user group and the DynamoDB table.
+
 # Ignore This Section
 
 

@@ -6,6 +6,7 @@ provider aws {
 }
 
 locals {
+  lightsail_availability_zone = length(var.AWS_AVAILABILITY_ZONE) > 0 ? var.AWS_AVAILABILITY_ZONE : "${var.AWS_REGION}a"
   # Note - S3 bucket names must be unique througout AWS so append user ID to ensure uniqueness
   lightsail_instance_name = var.AWS_DOMAIN_NAME
   lightsail_startup_script = <<EOF
@@ -134,7 +135,7 @@ resource aws_iam_user chhcsfun_lightsail_user {
 
 resource aws_lightsail_instance chhcsfun {
   name = local.lightsail_instance_name
-  availability_zone = var.AWS_REGION
+  availability_zone = local.lightsail_availability_zone
   blueprint_id = "ubuntu_20_04"
   bundle_id = "nano_2_0"
   user_data = local.lightsail_startup_script
