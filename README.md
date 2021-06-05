@@ -488,3 +488,9 @@ Verification Instructions, Delete Instructions, Backend State Store
 Server-Side Example, Phaser Example, Prevent Pool Delete
 Route53 Instructions, API Usage Instructions (with Login)
 Non-Data Hosted Zone, Cross-Account User Visibility
+Troubleshooting (Reboot, Checking Logs)
+
+sudo nano /etc/apt/apt.conf.d/20auto-upgrades
+https://linuxhint.com/enable-disable-unattended-upgrades-ubuntu/
+sudo dpkg-reconfigure unattended-upgrades
+  - Select 'No' option

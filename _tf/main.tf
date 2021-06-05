@@ -202,10 +202,6 @@ output id {
   value = aws_iam_access_key.chhcsfun_lightsail_user.id
 }
 
-output secret {
-  value = aws_iam_access_key.chhcsfun_lightsail_user.secret
-}
-
 output account_id {
   value = data.aws_caller_identity.current.account_id
 }
@@ -220,8 +216,4 @@ output caller_user {
 
 output caller_region {
   value = data.aws_region.current.name
-}
-
-output lightsail_startup_script {
-  value = local.lightsail_startup_script
 }
