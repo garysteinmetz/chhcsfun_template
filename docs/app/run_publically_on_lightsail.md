@@ -153,7 +153,7 @@ with the following command.
 
   - `sudo vi /etc/apache2/sites-available/000-default-le-ssl.conf`
 
-Now put the following just above the '</VirtualHost>' end tag near the bottom of the file.
+Now put the following just above the `</VirtualHost>` end tag near the bottom of the file.
 Make sure to substitute the `#TF_VAR_AWS_DOMAIN_NAME#` value with the correct domain
 name of your web site.
 
@@ -176,5 +176,31 @@ Finally restart the `Apache` server.
 Open a browser and go to `http://www.#TF_VAR_AWS_DOMAIN_NAME#` and confirm
 that the browser (A) gets forwarded to `https://#TF_VAR_AWS_DOMAIN_NAME#`
 and (B) now renders the ('coin flip') application.
+
+## Additional Recommended Ubuntu Configurations
+
+### Turn Off Automatic OS Updates
+
+Ubuntu is configured to periodically update (e.g. daily) the software on its system.
+These updates can take up space on the machine and may cause the machine
+to eventually run out of disk space. Within the Ubuntu terminal window,
+issue the following command to disable this periodic update mechanism.
+
+```
+sudo dpkg-reconfigure unattended-upgrades
+```
+
+Use the right arrow key to select the `<No>` option then press Return/Enter
+to complete this configuration.
+
+Optionally run the command `cat /etc/apt/apt.conf.d/20auto-upgrades` and confirm
+them following output ('0' is assigned to each value indicating the setting is disabled).
+
+```
+APT::Periodic::Update-Package-Lists "0";
+APT::Periodic::Unattended-Upgrade "0";
+```
+
+Reference - https://linuxhint.com/enable-disable-unattended-upgrades-ubuntu/
 
 [Click here to go back to the main page.](../../README.md)

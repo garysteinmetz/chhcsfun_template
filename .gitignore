@@ -14,5 +14,6 @@ buildNumber.properties
 .terraform
 terraform.tfstate
 terraform.tfstate.backup
+_tf/.terraform.lock.hcl
 .mvn
 *.log
