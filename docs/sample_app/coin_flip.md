@@ -36,7 +36,7 @@ Enter these commands -
 
 ```
 set LOCAL_CMS_PATH=.\examples\coin_flip_game\
-set LOCAL_IAM_USER={"name":"Biff the Understudy"}
+set LOCAL_IAM_USER={"cognito:username":"Biff the Understudy"}
 set LOCAL_USER_DATA={"isPresent":false}
 ```
 
@@ -50,7 +50,7 @@ Enter these commands -
 
 ```
 export LOCAL_CMS_PATH=./examples/coin_flip_game/
-export LOCAL_IAM_USER="{\"name\":\"Biff the Understudy\"}"
+export LOCAL_IAM_USER="{\"cognito:username\":\"Biff the Understudy\"}"
 export LOCAL_USER_DATA="{\"isPresent\":false}"
 ```
 
