@@ -1,0 +1,278 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <style>
+            #pane_area {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            div.pane {
+                width: 300px;
+                height: 300px;
+                border: 1px solid black;
+                display: inline-block;
+            }
+            iframe.standard {
+                width: 300px;
+                height: 300px;
+            }
+            img.standard {
+                width: 300px;
+                height: 300px;
+            }
+            div.text {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+        <script>
+        var game = 'app11';
+        var user;
+        var data;
+        var origData = {
+            "panes": [
+                {
+                    "type": 0,
+                    "text": "Make sure to do your homework!",
+                    "color": "green"
+                },
+                {
+                    "type": 1,
+                    "img": "https://img.icons8.com/office/16/000000/tsunami.png"
+                },
+                {
+                    "type": 2,
+                    "text": "Google News",
+                    "href": "https://news.google.com/topstories?tab=rn&hl=en-US&gl=US&ceid=US:en"
+                },
+                {
+                    "type": 0,
+                    "text": "Eat your breakfast.",
+                    "color": "red"
+                }
+            ]
+        };
+        function getUserInfo(callback) {
+            $.get(
+                {
+                    url: "/userInfo",
+                    success: function(data, status) {
+                        if (callback) {
+                            callback(data, status);
+                        }
+                    }
+                }
+            );
+        }
+        function getData(appName, callback) {
+            $.get(
+                {
+                    url: "/appState/" + appName,
+                    success: function(dataOne, status) {
+                        if (callback) {
+                            callback(dataOne, status);
+                        }
+                    }
+                }
+            );
+        }
+        function sendData(appName, appData, callback) {
+            $.post(
+                {
+                    url: "/appState/" + appName,
+                    data: {appData: JSON.stringify(appData)},
+                    success: function(data, status) {
+                        if (callback) {
+                            callback(data, status);
+                        }
+                    }
+                }
+            );
+        }
+        function generateLoginDomStructureImpl(targetId, userInfo) {
+            var baseDiv = $("#" + targetId)
+            var div = document.createElement( "div" );
+            $(baseDiv).append(div);
+            //
+            if (userInfo.isLoggedIn) {
+                $(div).text("Hello " + userInfo.username + "!");
+            } else {
+                var href = window.location.origin + "/login?url=" + encodeURIComponent(document.URL);
+                var a = document.createElement( "a" );
+                $(div).append(a);
+                $(a).attr("href", href);
+                $(a).text("Login Now");
+            }
+        }
+        function prepareAreaForPanes() {
+            $("#pane_area").empty();
+            var dataProcessFunctions = [renderTextPane, renderImagePane, renderIframePane];
+            if (data && data.panes) {
+                for (var i = 0; i < data.panes.length; i++) {
+                    var nextPane = data.panes[i];
+                    dataProcessFunctions[nextPane.type](i, nextPane);
+                    $(("#pane" + i)).addClass("pane");
+                }
+            }
+            //
+            $("#removePaneIndex").empty();
+            if (data && data.panes) {
+                for (var i = 0; i < data.panes.length; i++) {
+                    var nextElement = $(
+                        '<option value="' + i + '">'
+                        + i
+                        + '</option>'
+                    );
+                    $("#removePaneIndex").append(nextElement);
+                }
+            }
+        }
+        function insertPane(index) {
+        }
+        function addPane(data) {
+        }
+        function addTextPane() {
+            //alert("Add a text pane! " + $("#addTextPaneText").val());
+            //alert("Add a text pane! " + $("#addTextPaneColor").val());
+            data.panes.push(
+                {
+                    "type": 0,
+                    "text": $("#addTextPaneText").val(),
+                    "color": $("#addTextPaneColor").val()
+                }
+            );
+            prepareAreaForPanes();
+            sendData(game, data, function() {});
+        }
+        function addImagePane() {
+            //alert("Add a text pane! " + $("#addTextPaneText").val());
+            //alert("Add a text pane! " + $("#addTextPaneColor").val());
+            data.panes.push(
+                {
+                    "type": 1,
+                    "img": $("#addImagePaneUrl").val()
+                }
+            );
+            prepareAreaForPanes();
+            sendData(game, data, function() {});
+        }
+        function addIframePane() {
+            data.panes.push(
+                {
+                    "type": 2,
+                    "text": $("#addIframePaneText").val(),
+                    "href": $("#addIframePaneUrl").val()
+                }
+            );
+            prepareAreaForPanes();
+            sendData(game, data, function() {});
+        }
+        function removePane() {
+            data.panes.splice($("#removePaneIndex").val(), 1);
+            prepareAreaForPanes();
+            sendData(game, data, function() {});
+        }
+        function swapPanes(indexOne, indexTwo) {
+        }
+        function renderIframePane(index, data) {
+            var template = '<div id="' + ("pane" + index) + '">'
+                + '<a id="' + ("iframe" + index) + '"/>'
+                + '</div>';
+            $("#pane_area").append($(template));
+            $("#iframe" + index).attr("href", data.href);
+            $("#iframe" + index).attr("target", "_blank");
+            $("#iframe" + index).text(data.text);
+        }
+        function renderImagePane(index, data) {
+            var template = '<div id="' + ("pane" + index) + '">'
+                + '<img id="' + ("img" + index) + '">' + '</img>'
+                + '</div>';
+            $("#pane_area").append($(template));
+            $("#img" + index).attr("src", data.img);
+            $("#img" + index).addClass("standard");
+        }
+        function renderTextPane(index, data) {
+            var template = '<div id="' + ("pane" + index) + '">'
+                + '<div id="' + ("text" + index) + '">' + '</div>'
+                + '</div>';
+            $("#pane_area").append($(template));
+            $("#text" + index).text(data.text).css("color", data.color);
+        }
+        //function renderPhaserPane(index, data) {
+        //    var template = '<div id="' + ("pane" + index) + '">'
+        //        + '<iframe id="' + ("pane" + index) + '">' + '</iframe>'
+        //        + '</div>';
+        //}
+        </script>
+        <script>
+          //
+            $(document).ready(
+                function() {
+                //prepareAreaForPanes();
+                    getUserInfo(
+                        function(dataOne, status) {
+                            generateLoginDomStructureImpl("user_pane", dataOne);
+                            if (dataOne.isLoggedIn) {
+                                user = dataOne;
+                                getData(
+                                    game,
+                                    function(dataTwo, status) {
+                                        if (dataTwo.isPresent) {
+                                            data = JSON.parse(dataTwo.appData);
+                                        } else {
+                                            data = {
+                                                "panes": []
+                                            };
+                                        }
+                                        prepareAreaForPanes();
+                                    }
+                                );
+                            }
+                        }
+                    );
+                }
+            );
+          //
+      </script>
+
+    </head>
+    <body>
+    <div id="user_pane"></div>
+    <div id="pane_area"></div>
+    <hr />
+    <h2>Add Text Pane</h2>
+    Pane Text: <input id="addTextPaneText" type="text"
+                      value="Add your text here" />
+    <br />
+    Text Color: <select id="addTextPaneColor">
+        <option value="salmon" >Salmon</option>
+        <option value="red" >Red</option>
+        <option value="blue" >Blue</option>
+        <option value="midnightblue" >Midnight Blue</option>
+        <option value="lime" >Lime</option>
+    </select>
+    <br />
+    <input type="button" onclick="addTextPane()" value="Add Text Pane" />
+    <hr />
+    <h2>Add Image Pane</h2>
+    Pane Image URL: <input id="addImagePaneUrl" type="text"
+                      value="https://img.icons8.com/office/80/000000/internet--v1.png" />
+    <br />
+    <input type="button" onclick="addImagePane()" value="Add Image Pane" />
+    <hr />
+    <h2>Add Iframe Pane</h2>
+    Pane Text: <input id="addIframePaneText" type="text"
+                      value="Google" />
+    <br />
+    Pane Link URL: <input id="addIframePaneUrl" type="text"
+                           value="https://www.google.com" />
+    <br />
+    <input type="button" onclick="addIframePane()" value="Add Iframe Pane" />
+    <hr />
+    <h2>Remove Pane</h2>
+    <select id="removePaneIndex">
+    </select>
+    <input type="button" onclick="removePane()" value="Remove Pane" />
+    </body>
+</html>
