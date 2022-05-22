@@ -20,7 +20,7 @@ public class GeneralController {
     @Autowired
     CmsService cmsService;
     @ResponseBody
-    @RequestMapping(value="*", method=RequestMethod.GET)
+    @RequestMapping(value="/**", method=RequestMethod.GET)
     public ResponseEntity<InputStreamResource> general(HttpServletRequest request) {
         //System.out.println("ZZZ URL Path - " + request.getRequestURI());
         //System.out.println("ZZZ URL Context Path - " + request.getContextPath());
