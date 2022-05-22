@@ -266,6 +266,10 @@ been removed._
 
 #### Permissions - LightSail
 
+Important Note - Add policy that will allow DevOps user to reboot server.
+https://lightsail.aws.amazon.com/ls/docs/en_us/articles/security_iam_resource-based-policy-examples
+
+
   - Policy Name - `policies_for_lightsail`
 
 ```
@@ -282,7 +286,10 @@ been removed._
                 "lightsail:DeleteInstance",
                 "lightsail:DetachStaticIp",
                 "lightsail:Get*",
-                "lightsail:ReleaseStaticIp"
+                "lightsail:ReleaseStaticIp",
+                "lightsail:RebootInstance",
+                "lightsail:StartInstance",
+                "lightsail:StopInstance"
             ],
             "Resource": "*"
         }

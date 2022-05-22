@@ -177,6 +177,13 @@ Open a browser and go to `http://www.#TF_VAR_AWS_DOMAIN_NAME#` and confirm
 that the browser (A) gets forwarded to `https://#TF_VAR_AWS_DOMAIN_NAME#`
 and (B) now renders the ('coin flip') application.
 
+## Make Sure to Accept AWS Email Verifying Domain Name Registration
+
+After registering your domain name with AWS, make sure to accept an email AWS
+sends to you to verify that it was you that registered the domain. Failure to do so
+will cause the domain name to no longer be accessible (e.g. web pages will no longer load
+on a web browser).
+
 ## Additional Recommended Ubuntu Configurations
 
 ### Turn Off Automatic OS Updates
